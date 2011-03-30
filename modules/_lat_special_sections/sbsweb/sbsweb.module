@@ -1,0 +1,127 @@
+<?php
+
+/**
+ * SITTING BULL SCHOOL ALBUMS
+ *
+ * Page that shows the group of albums (first image selected)
+ *
+ */
+
+/**
+ * HOOK_MENU
+ *
+ * special/lakota/sbsweb                           - Index page
+ *
+ * Albums for students:
+ * special/lakota/sbsweb/albums                    - Albums index
+ * special/lakota/sbsweb/album/%nid                - Album display
+ *
+ * Worksheets for teachers:
+ * special/lakota/sbsweb/album-worksheets
+ * special/lakota/sbsweb/album-worksheet/%nid      - List options for this album
+ * special/lakota/sbsweb/album-worksheet/%nid/html - Prepare an ablum as an HTML worksheet
+ * special/lakota/sbsweb/album-worksheet/%nid/pdf  - Prepare an ablum as a PDF worksheet
+ *
+ */
+function sbsweb_menu() {
+  return array(
+    'special/lakota/sbsweb' => array(
+      'title' => 'Sitting Bull School',
+      'page callback' => 'theme',
+      'page arguments' => array('sbsweb'),
+      'access callback' => '_sbsweb_access',
+      'type' => MENU_CALLBACK,
+    ),
+    'special/lakota/sbsweb/albums' => array(
+      'title' => 'Albums',
+      'page callback' => 'theme',
+      'page arguments' => array('sbsweb_albums'),
+      'access callback' => '_sbsweb_access',
+      'type' => MENU_CALLBACK,
+    ),
+    'special/lakota/sbsweb/album/%node' => array(
+      'title' => 'Album',
+      'page callback' => 'theme',
+      'page arguments' => array('sbsweb_album', 4),
+      'access callback' => '_sbsweb_access',
+      'type' => MENU_CALLBACK,
+    ),
+    'special/lakota/sbsweb/album-worksheets' => array(
+      'title' => 'Worksheets',
+      'page callback' => 'theme',
+      'page arguments' => array('sbsweb_album_worksheets'),
+      'access callback' => '_sbsweb_access',
+      'type' => MENU_CALLBACK,
+    ),
+    'special/lakota/sbsweb/album-worksheet/%node' => array(
+      'title' => 'Worksheet',
+      'page callback' => 'theme',
+      'page arguments' => array('sbsweb_album_worksheet', 4),
+      'access callback' => '_sbsweb_access',
+      'type' => MENU_CALLBACK,
+    ),
+    'special/lakota/sbsweb/album-worksheet/%node/html' => array(
+      'title' => 'Worksheet HTML',
+      'page callback' => 'theme',
+      'page arguments' => array('sbsweb_album_worksheet_html', 4),
+      'access callback' => '_sbsweb_access',
+      'type' => MENU_CALLBACK,
+    ),
+    'special/lakota/sbsweb/album-worksheet/%node/pdf' => array(
+      'title' => 'Worksheet PDF',
+      'page callback' => 'theme',
+      'page arguments' => array('sbsweb_album_worksheet_pdf', 4),
+      'access callback' => '_sbsweb_access',
+      'type' => MENU_CALLBACK,
+    ),
+  );
+}
+
+function sbsweb_theme($existing, $type, $theme, $path) {
+  return array(
+    'sbsweb' => array(
+      'arguments' => array(),
+      'template' => 'sbsweb',
+      'path' => "$path/theme",
+    ),
+    'sbsweb_albums' => array(
+      'arguments' => array(),
+      'template' => 'sbsweb-albums',
+      'path' => "$path/theme",
+    ),
+    'sbsweb_album' => array(
+      'arguments' => array('nid' => null),
+      'template' => 'sbsweb-album',
+      'path' => "$path/theme",
+    ),
+    'sbsweb_album_worksheets' => array(
+      'arguments' => array(),
+      'template' => 'sbsweb-album-worksheets',
+      'path' => "$path/theme",
+    ),
+    'sbsweb_album_worksheet' => array(
+      'arguments' => array('nid' => null),
+      'template' => 'sbsweb-album-worksheet',
+      'path' => "$path/theme",
+    ),
+    'sbsweb_album_worksheet_html' => array(
+      'arguments' => array('nid' => null),
+      'template' => 'sbsweb-album-worksheet-html',
+      'path' => "$path/theme",
+    ),
+    'sbsweb_album_worksheet_pdf' => array(
+      'arguments' => array('nid' => null),
+      'template' => 'sbsweb-album-worksheet-pdf',
+      'path' => "$path/theme",
+    ),
+  );
+}
+
+function _sbsweb_access() {
+  //TODO: CHECK IP ADDRESS OR USERNAME (HARDCODED HACK)
+  return true;
+}
+
+function _sbsweb_page() {
+  return 'HERE';
+}

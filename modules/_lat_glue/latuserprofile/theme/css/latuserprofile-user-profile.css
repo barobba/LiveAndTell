@@ -1,0 +1,11 @@
+@charset "utf-8";
+/* CSS Document */
+.profile-content .profile-content-left {
+  width: 200px;
+}
+.profile-content .profile-content-middle {
+  padding-left: 8px;
+}
+.view-lat-profile-content .node-teaser {
+  margin-bottom: 4px;
+}

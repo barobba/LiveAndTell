@@ -1,0 +1,4 @@
+name = LAT User Profile
+description = User profile layout
+package = .LiveAndTell
+core = 6.x

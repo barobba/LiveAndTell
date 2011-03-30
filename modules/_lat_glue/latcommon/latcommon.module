@@ -1,0 +1,21 @@
+<?php
+
+function _lat_node_initialize($type) {
+  module_load_include('inc', 'node', 'node.pages');
+  $node = new stdClass();
+  $node->type = $type;
+  node_object_prepare($node);
+  return $node;
+}
+
+function _lat_array_split($input_array, $subarray_size) {
+  $num_segments = count($input_array) / $subarray_size;
+  $result = array();
+  for ($segment_num = 0; $segment_num < $num_segments; $segment_num++) {
+    $result []= array_splice($input_array, 0, $subarray_size); 
+  }
+  if (!empty($input_array)) {
+    $result []= $input_array;
+  }
+  return $result;
+}

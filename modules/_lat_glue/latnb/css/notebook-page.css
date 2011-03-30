@@ -1,0 +1,41 @@
+@CHARSET "ISO-8859-1";
+
+form#latnb-activityform {
+	width: 192px;
+	float: left;
+}
+form#latnb-activityform #edit-title {
+	width: 186px; /* width - 6 */
+}
+
+div.view-id-image_notebooks {
+  width: 744px;
+  float: right;
+  background-color: rgb(240,240,240);
+  border: 1px solid rgb(220,220,220);
+}
+div.view-id-image_notebooks .views-table {
+	width: 100%;
+}
+div.view-id-image_notebooks .views-table thead tr th {
+	padding-bottom: .5em; 
+}
+div.view-id-image_notebooks .views-table thead tr th.views-field-title {
+  padding-left: .5em; 
+}
+div.view-id-image_notebooks .views-table tbody {
+}
+div.view-id-image_notebooks .views-table tr {
+  background-color: transparent;
+  border: none;
+}
+div.view-id-image_notebooks .views-table tr td.views-field-title {
+	padding-left: .5em;
+}
+div.view-id-image_notebooks .views-table tr td {
+  padding-top: .5em;
+  padding-bottom: .5em;
+}
+div.view-id-image_notebooks .views-table tr.odd {
+	background-color: rgb(248,248,248);
+}

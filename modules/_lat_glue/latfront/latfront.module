@@ -1,0 +1,34 @@
+<?php
+
+function latfront_init() {
+  $path = drupal_get_path('module', 'latfront');
+  drupal_add_css("$path/theme/css/latfront-lat-frontpage.css", 'module');  
+}
+
+function latfront_menu() {
+  return array(
+    'frontpage' => array(
+      'title' => 'Front page',
+      'page callback' => 'theme',
+      'page arguments' => array('lat_frontpage'),
+      'access callback' => true,
+    ),
+  );
+}
+
+function latfront_theme($existing, $type, $theme, $path) {    
+  return array(
+    'lat_frontpage' => array(
+      'arguments' => array(),
+      'template' => 'lat-frontpage',
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+    'lat_signup_notice' => array(
+      'arguments' => array(),
+      'template' => 'lat-signup-notice',
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+  );
+}

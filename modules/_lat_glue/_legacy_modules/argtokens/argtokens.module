@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * Define tokens 'argN' and 'argN-alias'
+ */
+function argtokens_token_list($type = 'all') {
+  $tokens = array();
+  $tokens['global']['argN'] = t('Url argument: arg0, arg1, ..., argN');
+  $tokens['global']['argN-alias'] = t('Url alias argument N. Defaults to url if no alias is found.');
+  return $tokens;
+}
+
+/**
+ * Prepare token values for 'argN' and 'argN-alias'
+ */
+function argtokens_token_values($type, $object = NULL) {
+
+  $values = array();
+
+  //Prepare values for 'argN'
+  $arg_array = explode('/', $_GET['q']);
+  foreach ($arg_array as $index => $arg_value) {
+    $values['arg'. $index] = $arg_value;
+  }
+
+  //Prepare values for 'argN-alias'
+  $alias_array = explode('/', drupal_get_path_alias($_GET['q']));
+  foreach ($alias_array as $index => $alias_value) {
+    $values['arg'. $index .'-alias'] = $alias_value;
+  }
+
+  return $values;
+}

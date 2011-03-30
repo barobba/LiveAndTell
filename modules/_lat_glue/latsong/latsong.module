@@ -1,0 +1,41 @@
+<?php 
+/**
+ * Places teaser data in the node->content
+ */
+
+/**
+ * Implementation of hook_nodeapi(). 
+ * @param unknown_type $node
+ * @param unknown_type $op
+ * @param unknown_type $a3
+ * @param unknown_type $a4
+ */
+function latsong_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type == 'song') {
+    switch($op) {
+      case 'view':
+        $is_teaser = $a3;
+        $is_page = $a4;
+        if ($is_teaser) {
+          //Song audio player
+          $songdata['#item']['value'] = $node->field_song_audio[0]['value'];
+          $audioplayer = theme('audio_formatter_default', $songdata);
+          $node->content['lat_song_audioplayer'] = array(
+            '#value' => $audioplayer,
+            '#weight' => 998,
+          ); 
+          //Song lyrics
+          $lyrics = $node->field_song_lyrics[0]['value'];
+          $lyrics = ' ' . substr($lyrics, 0, 140);
+          if (strlen($lyrics) > 140) {
+            $lyrics .= '...';
+          }
+          $node->content['lat_song_lyrics'] = array(
+            '#value' => $lyrics,
+            '#weight' => 999
+          );
+        }
+        break;
+    }
+  }
+}

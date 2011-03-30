@@ -1,0 +1,4 @@
+name = LAT Song Nodes
+description = Customizations for Song nodes.
+package = .LiveAndTell
+core = 6.x

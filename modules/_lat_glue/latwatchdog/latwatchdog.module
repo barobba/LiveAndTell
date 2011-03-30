@@ -1,0 +1,88 @@
+<?php
+
+function latwatchdog_init() {
+  //watchdog('latwatchdog', 'test', array(), WATCHDOG_ERROR);
+}
+
+// Send errors to administrator
+function latwatchdog_watchdog($log_entry) {
+  $filter_severity_levels = array(
+    WATCHDOG_EMERG,
+    WATCHDOG_ALERT,
+    WATCHDOG_CRITICAL,
+    WATCHDOG_ERROR,
+    //WATCHDOG_WARNING,
+    //WATCHDOG_NOTICE,
+    //WATCHDOG_INFO,
+    //WATCHDOG_DEBUG
+  );
+  if (in_array($log_entry['severity'], $filter_severity_levels)) {
+    _latwatchdog_mail_event($log_entry);
+  } else {
+    // do nothing
+  }
+}
+
+function _latwatchdog_mail_event($log_entry) {
+
+  $mail = array();
+  
+  // From
+  $mail['headers'] = array(
+    'From' => 'LiveAndTell Report <no-reply@liveandtell.com>',
+  );
+  
+  // To
+  $account = user_load(1); // Loads the admin account
+  $mail['to'] = $account->mail;
+  
+  // Subject Line  
+  $severity_list = watchdog_severity_levels();
+  $severity = $log_entry['severity'];
+  $severity_desc = $severity_list[$severity];
+  $mail['subject'] = t(
+    'Watchdog @severity_desc (@type)', 
+    array(
+      '@severity_desc' => $severity_desc,
+      '@type'          => $log_entry['type'],
+    )
+  );
+
+  // Body
+  $body_template  = <<<EOS
+    @type [@severity_desc @severity]
+    
+    @message
+    @link
+    
+    User: @name (@uid)
+    Request URI: @request_uri
+    Referrer URI: @referer_uri
+    
+    Timestamp: @timestamp
+    Site: @base_url
+    IP Address: @ip
+    
+EOS;
+
+  $mail['body'] = t(
+    $body_template,
+    array(
+      '@base_url'      => $GLOBALS['base_url'],
+      '@severity'      => $log_entry['severity'],
+      '@severity_desc' => $severity_list[$log_entry['severity']],
+      '@timestamp'     => format_date($log_entry['timestamp']),
+      '@type'          => $log_entry['type'],
+      '@ip'            => $log_entry['ip'],
+      '@request_uri'   => $log_entry['request_uri'],
+      '@referer_uri'   => $log_entry['referer'],
+      '@uid'           => $log_entry['user']->uid,
+      '@name'          => $log_entry['user']->name,
+      '@link'          => strip_tags($log_entry['link']),
+      '@message'       => strip_tags($log_entry['message']),
+    )
+  );
+
+  // Send email
+  drupal_mail_send($mail);
+}

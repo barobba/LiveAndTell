@@ -1,0 +1,4 @@
+name = LAT Picture Book
+description = Collection of images that can be annotated with audio.
+package = .LiveAndTell
+core = 6.x

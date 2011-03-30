@@ -1,0 +1,9 @@
+
+body.node-type-lat-customer-subscription table#lat-page-layout-table td.left {
+  width: 25%;
+}
+
+body.node-type-lat-customer-subscription .field-field-subscrip-image {
+  text-align: center;
+  padding-bottom: 32px;
+}

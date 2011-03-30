@@ -1,0 +1,4 @@
+name = LAT Login Redirect
+description = Redirects user after they log into the website.
+package = .LiveAndTell
+core = 6.x

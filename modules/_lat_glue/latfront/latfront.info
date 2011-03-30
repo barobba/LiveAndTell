@@ -1,0 +1,5 @@
+name = LAT Front Page
+description = Front page
+package = .LiveAndTell
+core = 6.x
+dependencies []= latlangnav

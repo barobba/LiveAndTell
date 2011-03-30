@@ -1,0 +1,34 @@
+<?php
+/**
+ * 1. Add CSS file
+ * 2. Append theme path
+ * 3. Change template filename
+ */ 
+ 
+function latcustsub_init() {
+  $path = drupal_get_path('module', 'latcustsub');
+  drupal_add_css("$path/theme/css/latcustsub-lat-customer-subscription.css");
+}
+
+function latcustsub_theme_registry_alter(&$reg) {
+
+  //Add this module's theme folder to the path
+  $path = drupal_get_path('module', 'latcustsub');
+  $reg['node']['theme paths'] []= "$path/theme";
+  
+}
+
+function latcustsub_preprocess_node(&$vars) {
+
+  $node = $vars['node'];
+  if ($node->type == 'lat_customer_subscription') {
+  
+    //Set template file
+    $vars['template_files'] []= 'lat-customer-subscription';
+    
+    //Set some variables
+    //TBD
+    
+  }
+  
+}

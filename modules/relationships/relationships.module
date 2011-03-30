@@ -1,0 +1,887 @@
+<?php
+
+// $Id$
+
+/**
+ * @file
+ *
+ * Allows an administrator to relate two node types, such that
+ * one node type is the parent of the other.
+ */
+
+/**
+ * Implementation of hook_menu()
+ */
+function relationships_menu() {
+  $items = array();
+  
+  $node_types = node_get_types();
+  foreach ($node_types as $type) {
+    $items['admin/content/node-type/'.str_replace('_', '-', $type->type).'/relationship'] = array(
+      'title' => 'Manage Relationships',
+      'page callback' => 'relationships_admin',
+      'page arguments' => array(3, 5, 6),
+      'access arguments' => array('administer site configuration'),
+      'type' => MENU_LOCAL_TASK,
+      'file' => 'relationships.admin.inc',
+    );  
+  }
+  
+  return $items;
+}
+
+/**
+ * Implementation of hook_nodeapi()
+ */
+function relationships_nodeapi(&$node, $op, $a3, $a4) {  
+  switch($op) {
+    case 'insert':
+      relationships_nodeapi_insert($node);
+      break;
+    case 'view':
+      // Nothing to do.
+      break;
+    case 'prepare':
+      relationships_nodeapi_prepare($node);
+      break;
+    case 'update':
+      relationships_nodeapi_update($node);
+      break;
+    case 'delete':
+      // Nothing to do.
+      break;
+  }
+}
+
+function relationships_nodeapi_insert(&$node) {  
+  relationships_nodeapi_update($node);  
+}
+
+function relationships_nodeapi_prepare(&$child) {
+  
+  $arg0 = arg(0);
+  $arg1 = arg(1);
+  $arg2 = arg(2);
+  $is_add_page = "$arg0/$arg1" == 'node/add';
+  $is_edit_page = "$arg0/$arg2" == 'node/edit';
+  
+  if ($is_add_page) {
+    
+    // Loop through arguments to find the parent node
+    // Criteria for being a valid parent node:
+    // - A parent node NID listed in one of the arguments
+    // - A relationship is defined for the parent node
+    // - The relationship's child type is the same as the node currently being created 
+    
+    $args = arg();
+    
+    // REMOVED ARRAY_SHIFT BECAUSE IT WAS CAUSING ERROR
+    // SOMETHING ABOUT "INVALID TYPE -- EXPECTING ARRAY"
+    //$args = array_shift($args); // remove "node"
+    //$args = array_shift($args); // remove "add" or "NID"
+    //$args = array_shift($args); // remove "type" or "edit"
+    
+    foreach($args as $arg_pos => $arg) {
+      // Attempt to load a parent
+      $parent = node_load($arg);
+      if ($parent) {
+        // Attempt to load a relationship
+        $relationship = reset(relationships_load($parent->type, $child->type));
+        if ($relationship->arg == $arg_pos) {
+          // If relationship exists, then add it to the list
+          $parents[] = $parent;
+        }
+      }
+    }
+  }
+  elseif ($is_edit_page) {
+    $parents = relationships_node_get_parents($child);
+  }
+  
+  // Results thus far - a list of parent nodes
+  
+  //
+  // Working with parent information, of the NODE
+  //
+  if (!empty($parents)) {    
+    foreach($parents as $parent) {
+  
+      //THE RELATIONSHIP SHOULDN'T NEED TO BE LOADED A SECOND TIME.
+      $relationship = reset(relationships_load($parent->type, $child->type));
+      
+      if ($relationship) {
+        
+        // Handle nodereference
+        // (Fof the "add" form; uses arguments to assign NID)
+        relationships_relationship_nodeapi_prepare_nodereference($relationship, $parent, $child);
+          
+        // Handle authorship
+        if ($relationship->propagation_rules['author']) {
+          relationships_relationship_nodeapi_prepare_author($relationship, $parent, $child);
+        }
+  
+        // Handle pubished status
+        if ($relationship->propagation_rules['publish']) {
+          relationships_relationship_nodeapi_prepare_status($relationship, $parent, $child);
+        }
+        
+        /*
+        // Handle taxonomy
+        // THE FUNCTIONAL EQUIVALENT IS CURRENTLY BEING HANDLED BY
+        // THE FUNCTION relationships_relationship_form_alter_taxonomy().
+        // THAT NEEDS TO BE REWRITTEN FOR HERE, INSTEAD OF WHERE IT IS NOW.
+        if ($relationship->propagation_rules['vocabs']) {
+          relationships_nodeapi_prepare_vocabs($relationship, $parent, $child);
+        }
+        */
+  
+        // Handle groups
+        if ($relationship->propagation_rules['groups']) {
+          relationships_relationship_nodeapi_prepare_groups($relationship, $parent, $child);
+        }
+        
+      }
+    }
+  }
+}
+
+function relationships_relationship_nodeapi_prepare_author($relationship, $parent, &$child) {
+  $child->uid = $parent->uid;
+}
+
+function relationships_relationship_nodeapi_prepare_status($relationship, $parent, &$child) {
+  $child->status = $parent->status;
+}
+  
+function relationships_relationship_nodeapi_prepare_groups($relationship, $parent, &$child) {
+  $is_parent_group_post = og_is_group_post_type($parent->type);
+  $is_child_group_post = og_is_group_post_type($child->type);
+  if ($is_parent_group_post && $is_child_group_post) {
+    if ($parent->og_public) {
+      $child->og_public = $parent->og_public;
+    }
+    if ($parent->og_groups) {
+      $child->og_groups = $parent->og_groups;
+    }
+    if ($parent->og_groups_both) {
+      $child->og_groups_both = $parent->og_groups_both;
+    }
+  }
+}
+
+function relationships_relationship_nodeapi_prepare_nodereference($relationship, $parent, &$child) {
+  $child->{$relationship->field_name}[0]['nid'] = $parent->nid;
+}
+
+function relationships_nodeapi_update(&$node) {  
+  
+  // Propagate down, i.e. update the children
+  $children = relationships_node_get_children($node);
+  if ($children) {
+    $parents = $node;
+    relationships_node_propagate($parents, $children);
+  }
+
+  /*
+  // THE FOLLOWING IS COMMENTED OUT BECAUSE BOTH UP AND DOWN CAUSES AN INFINITE LOOP.
+  // Propagate up, i.e. update the parents
+  $parents = relationships_node_get_parents($node);
+  if ($parents) {
+    $children = $node; 
+    relationships_node_propagate($parents, $children);
+  }
+  */
+  
+}
+
+function relationships_node_propagate($parents, $children) {
+  
+  // If only one parent, put into array
+  if (!is_array($parents)) {
+    $parents = array($parents);
+  }
+
+  // If only one child, put into array
+  if (!is_array($children)) {
+    $children = array($children);
+  }
+
+  // WHY ARE WE LOOPING THROUGH MORE THAN ONE PARENT?
+  // (IS IT BECAUSE WE ARE EXPECTING RULES THAT PROPAGATE UPWARDS?)
+  foreach($parents as $parent) {
+    foreach($children as $child) {
+      
+      // Get the rules that apply to this parent-child pair
+      $rules = _relationships_get_rules($parent->type, $child->type);
+      if ($rules) {
+        
+        // Propagate authorship
+        if ($rules['authorship']) {
+          relationships_relationship_node_propagate_authorship($parent, $child);
+        }
+
+        // Propagate published status
+        if ($rules['publish']) {
+          relationships_relationship_node_propagate_publish($parent, $child);
+        }
+
+        // Propagate taxonomy
+        if ($rules['vocabs']) {
+          relationships_relationship_node_propagate_taxonomy($parent, $child, $rules['vocabs']);
+        }  
+
+        // Propagate groups
+        if ($rules['groups']) {
+          relationships_relationship_node_propagate_groups($parent, $child);
+        }
+        
+      } // end if
+      
+    } // end foreach
+  } // end foreach
+  
+}
+
+
+function relationships_node_get_parents($child) {
+  
+  // Cast child as an array
+  $child = (array)$child;
+  
+  // Get all field names that we manage
+  $result = db_query("SELECT field_name FROM {relationships} WHERE child_type = '%s'", $child['type']);
+  
+  // Loop through all field_names
+  while ($row = db_fetch_object($result)) {
+    
+    // If field_name exists in node, we are managing this field
+    if (in_array($row->field_name, array_keys($child))) {
+      
+      // Load and return the node
+      $child_nodereference_nid = $child[$row->field_name][0]['nid']; 
+      if (isset($child_nodereference_nid)) {
+        $parents[] = node_load($child_nodereference_nid);
+      }
+      
+    }
+  }
+  
+  return $parents;
+}
+
+/**
+ * Helper method.  Takes a node, returns all nodes that
+ * reference this node using a nodereference field that
+ * we are managing.
+ */
+function relationships_node_get_children($parent) {  
+  
+  $children = array();
+  
+  // Get all child_types and field names that we manage
+  $relationships_result = db_query("SELECT * FROM {relationships} WHERE parent_type = '%s'", $parent->type);
+
+  // Loop through all child node types
+  while ($relationship = db_fetch_object($relationships_result)) {
+    
+    // We now have a parent-type, node-type and field-name set
+    $child_type = $relationship->child_type;
+    $field_name = $relationship->field_name;
+    $table_name = "{content_$field_name}";
+    if (db_table_exists($table_name)) {
+      // Query the content_type_* table for all nodes who reference our parent
+      //$nodes_result = db_query("SELECT nid FROM {content_type_".$child_type."} WHERE ".$field_name."_nid = %d", $parent->nid);
+      $nodes_result = db_query("SELECT nid FROM $table_name WHERE ".$field_name."_nid = %d", $parent->nid);
+    } else {
+      $table_name = "{content_type_$child_type}";
+      $nodes_result = db_query("SELECT nid FROM $table_name WHERE ".$field_name."_nid = %d", $parent->nid);
+    }
+    while ($nodes = db_fetch_object($nodes_result)) {
+      $children[] = node_load($nodes->nid);    
+    }
+  }
+  
+  return empty($children) ? FALSE : $children;
+}
+
+function _relationships_settings_unpack(&$relationship) {
+  if (isset($relationship->settings)) {
+    drupal_unpack($relationship, 'settings');
+  }
+}
+
+/**
+ * Relationship Get Rules
+ * 
+ * (Assumes each parent/child relationship is only on one field)
+ * 
+ * @param unknown_type $parent
+ * @param unknown_type $child
+ */
+function _relationships_get_rules($parent_type, $child_type) {
+  $relationships = relationships_load($parent_type, $child_type);
+  $relationship = $relationships[0];
+  // WHY DOES THIS ASSUME THERE IS ONLY ONE RELATIONSHIP ESTABLISHED?
+  // ARE PROPAGATION RULES LIMITED TO ONE FIELD PER "PARENT_TYPE" - "CHILD_TYPE"?
+  // IS THIS A DESIGN CONSTRAINT FOR LAT?
+  // IF SO, THIS MIGHT NEED TO BE REMOVED, OR MADE INTO AN ADMIN-LEVEL OPTION.
+  if (!empty($relationship->propagation_rules)) {
+    return $relationship->propagation_rules;
+  }
+  else {
+    return FALSE;
+  }
+}
+
+/**
+ * Propagate authorship
+ * 
+ * @param $parent
+ * @param $child
+ */
+function relationships_relationship_node_propagate_authorship($parent, $child) {
+
+  // Make sure child NID exists.
+  // Otherwise, node_save() will create a new node.
+  if ($child->nid) {
+    if ($child->uid != $parent->uid) {
+      $child->uid = $parent->uid;
+      node_save($child);
+    } 
+    else {
+      // Do nothing, already set to the correct value
+    } 
+  }
+  else {
+    watchdog('LAT Relationships', 'Child is missing NID', array(), WATCHDOG_ERROR);
+    drupal_set_message('Child is missing NID', 'error');
+  }
+  
+}
+
+function relationships_relationship_node_propagate_publish($parent, $child) {
+  
+  // Make sure child NID exists.
+  // Otherwise, node_save() will create a new node.
+  if ($child->nid) {
+    if ($child->status != $parent->status) {
+      $child->status = $parent->status;
+      node_save($child);
+    } 
+    else {
+      // Do nothing, already set to the correct value
+    } 
+  }
+  else {
+    watchdog('LAT Relationships', 'Child is missing NID', array(), WATCHDOG_ERROR);
+    drupal_set_message('Child is missing NID', 'error');
+  }
+  
+}
+
+function relationships_relationship_node_propagate_groups($parent, $child) {
+  // Make sure child NID exists. Otherwise, node_save() will create a new node.
+  if ($child->nid) {
+    $child->og_public = $parent->og_public;
+    $child->og_groups = $parent->og_groups;
+    $child->og_groups_both = $parent->og_groups_both;
+    node_save($child);
+  }
+  else {
+    watchdog('LAT Relationships', 'Child is missing NID', array(), WATCHDOG_ERROR);
+    drupal_set_message('Child is missing NID', 'error');
+  }
+}
+
+function relationships_relationship_node_propagate_taxonomy_get_terms($vocab_id) {
+  $vocabulary_term_tree = taxonomy_get_tree($vocab_id);
+  foreach($vocabulary_term_tree as $term) {
+    $vocabulary_terms[] = $term->tid;
+  }
+  return $vocabulary_terms;
+}
+
+/**
+ * Node Vocabulary Terms Clear
+ * 
+ * Clear the node of any terms from this vocabulary
+ * 
+ * @param $node
+ * @param $vocab_id
+ */
+function relationships_relationship_node_propagate_taxonomy_clear_child_terms($node, $vocab_id) {
+  // Clear the node of any terms from this vocabulary
+  if (isset($node->taxonomy)) {
+    $vocabulary_terms = relationships_relationship_node_propagate_taxonomy_get_terms($vocab_id);
+    foreach($node->taxonomy as $term_id => $term) {
+      if (in_array($term_id, $vocabulary_terms)) {
+        unset($node->taxonomy[$term_id]);
+      }
+      else {
+        // Do nothing, term is from a different vocabulary.
+      }
+    }
+  }
+  else {
+    // Do nothing, vocabulary doesn't exist for this node.
+  }
+}
+
+/**
+ * Node Propagate Taxonomy
+ * 
+ * Copy all terms from parent to child, for this vocabulary.
+ * @param unknown_type $parent
+ * @param unknown_type $child
+ * @param unknown_type $vocabs
+ */
+function relationships_relationship_node_propagate_taxonomy($parent, $child, $vocabs) {
+
+  // Make sure child NID exists.
+  // Otherwise, node_save() will create a new node.
+  if (!isset($child->nid)) {
+    watchdog('LAT Relationships', 'Child is missing NID', array(), WATCHDOG_ERROR);
+    drupal_set_message('Child is missing NID', 'error');
+    return;
+  }
+  
+  $changes_made = FALSE;
+  foreach($vocabs as $vid) {
+    $parent_terms = taxonomy_node_get_terms_by_vocabulary($parent, $vid);
+    $child_terms = taxonomy_node_get_terms_by_vocabulary($child, $vid);
+    if ($parent_terms != $child_terms) {
+      relationships_relationship_node_propagate_taxonomy_clear_child_terms($child, $vocab_id);
+      foreach($parent_terms as $term) {
+        $child->taxonomy[$term->tid] = $term;
+      }
+      $changes_made = TRUE;
+    }
+    else {
+      // Do nothing, vocabulary terms are the same.
+    }
+  }  
+
+  if ($changes_made) {
+    node_save($child);
+  }
+  else {
+    // Do nothing, all parent-child vocabularies are the same.
+  }
+  
+}
+
+/**
+ * Relationship Delete
+ * 
+ * Helper function.  Deletes a relationship from the database.
+ * @param $parent_type
+ * @param $child_type
+ */
+function relationships_delete($parent_type, $child_type) {
+  // Check if relationship exists
+  if (_relationships_is_managed($parent_type, $child_type)) {
+    // Delete relationship
+    db_query("DELETE FROM {relationships} WHERE parent_type = '%s' AND child_type = '%s'", $parent_type, $child_type);    
+  }
+}
+
+function relationships_save($parent_type, $child_type, $field_name, $settings) {
+  
+  // Construct relationship record
+  $record = array(
+    'parent_type' => $parent_type,
+    'child_type' => $child_type,
+    'field_name' => $field_name,
+    'settings' => is_array($settings) ? serialize($settings) : $settings,
+  );
+  
+  // Check for existing table entry
+  $relationship_exists = _relationships_is_managed($parent_type, $child_type);
+  if (!$relationship_exists) {
+    // Create new entry
+    drupal_write_record('relationships', $record);    
+    return SAVED_NEW;
+  }
+  else {
+    // Update entry
+    drupal_write_record('relationships', $record, array('parent_type', 'child_type'));
+    return SAVED_UPDATED;
+  }
+}
+
+/**
+ * Get Eligible Fields
+ * 
+ * Return nodereference fields
+ *  
+ * @param $parent_type
+ * @param $child_type
+ */
+function _relationships_get_eligible_nodereference_fields($parent_type, $child_type) {
+  
+  $eligible_fields = array();
+  
+  // Get all the nodereference fields, for all content types
+  $query  =<<<EOS
+    SELECT
+      *
+    FROM 
+      {content_node_field} cnf, 
+      {content_node_field_instance} cnfi
+    WHERE 
+      cnf.field_name = cnfi.field_name 
+      AND cnf.type = 'nodereference' 
+      AND cnfi.type_name = '%s'
+EOS;
+  $result_set = db_query($query, $child_type);
+
+  // Filter the nodereference fields, based on following criteria:
+  // - Must reference single parent node
+  // - Reference must be restricted to one content type
+  // - The type that can be references must be the same as $parent_type 
+  while ($field_info = db_fetch_object($result_set)) {
+    
+    // Unpack field's global settings
+    drupal_unpack($field_info, 'global_settings');
+    
+    // Only want fields that are NOT allowed to have multiples.
+    // Otherwise,there would be multiple parents to propagate from,
+    // and this module is not programmable enough to figure out
+    // which parent should be propagated from.
+    if (!$field_info->multiple) {
+      
+      // Nodereference must have only one type defined, that it can reference
+      // and that type must be the same as $parent_type.
+      // THIS MIGHT BE A LAT DESIGN CONSTRAINT!!!!!!!!!!!!!!!!!!!
+      // SO, IT'S POSSIBLE THIS SHOULDN'T BE HERE!!!!!!!!!!!!!!!!
+      $referenceable_types = array_filter($field_info->referenceable_types);
+      $references_one_type = count($referenceable_types) == 1;
+      $references_parent_type = $referenceable_types[$parent_type] == $parent_type;
+      if ($references_one_type && $references_parent_type) {
+        $eligible_fields[$field_info->field_name] = $field_info->label;
+      }
+    }
+  }
+  return $eligible_fields;
+}
+
+/**
+ * Helper function.  Takes a node type and loads the
+ * corresponding relationships from the database.  If a child_type
+ * is specified, only the one relationship corresponding to the
+ * parent_type / child_type pair is loaded
+ */
+function relationships_load($parent_type, $child_type = null) {
+
+  // CURRENTLY DOESN'T LOAD RELATIONSHIPS BASED ON FIELD_TYPE!!!!!!
+  // (WOULD LOADING BASED ON FIELD_TYPE BE NEEDED?)
+  // PERHAPS THIS CODE ASSUMES THERE IS ONLY ONE PRAPOGATION RULE ALLOWED
+  // PER "PARENT_TYPE" - "CHILD_TYPE" RELATIONSHIP.
+  // IN THAT CASE, THE FIELD_NAME WOULD BE TRIVIAL.
+  // IS THIS A LAT DESIGN CONSTRAINT? PERHAPS THAT SHOULD BE CONFIGURABLE,
+  // BASED ON ADMINISTRATIVE OPTIONS.
+  
+  $relationships = array();    
+  
+  // Load "relationships" from the database.
+  if ($parent_type && $child_type) {
+    $record_set = db_query("SELECT * FROM {relationships} WHERE parent_type = '%s' AND child_type = '%s'", $parent_type, $child_type);
+  }
+  elseif ($parent_type) {  
+    $record_set = db_query("SELECT * FROM {relationships} WHERE parent_type = '%s'", $parent_type);
+  }
+  else {
+    // CURRENTLY NOT CHECKING CHILD-ONLY QUERIES,
+    // WHICH WOULD BE USED FOR PROPOGATING UP FROM CHILD TO PARENT.
+  }
+
+  // Combine relationships into an array.
+  while ($relationship = db_fetch_object($record_set)) {
+    _relationships_settings_unpack($relationship);
+    $relationships[] = $relationship;
+  }
+  
+  return $relationships;
+}
+
+
+function _relationships_get_eligible_types($parent_type) {
+  
+  $eligible_types = array();
+  $query = <<<EOS
+    SELECT 
+      *
+    FROM
+      {content_node_field} cnf, 
+      {content_node_field_instance} cnfi
+    WHERE 
+      cnf.field_name = cnfi.field_name 
+      AND cnf.type = 'nodereference'
+EOS;
+  
+  // Query for all content types with node reference fields
+  $result_set = db_query($query);
+  
+  while ($field_info = db_fetch_object($result_set)) {
+    
+    // Unpack global settings
+    drupal_unpack($field_info, 'global_settings');
+    
+    // Make sure we are not already managing this node type
+    if (!_relationships_is_managed($parent_type, $field_info->type_name)) {
+      
+      // Filter out all types with a value of 0,
+      // because this would mean a child would have two parents,
+      // and it would be difficult to determine which parent to propagate
+      // from...unless there is a propagate-up option (which isn't implemented)
+      $referenceable_types = array_filter($field_info->referenceable_types);
+      
+      // If $types only has one element, and it is our parent type, then add to eligible types
+      $references_one_type = count($referenceable_types) == 1;
+      $references_parent_type = $referenceable_types[$parent_type] == $parent_type;
+      if ($references_one_type && $references_parent_type) {
+        $eligible_types[$field_info->type_name] = node_get_types('name', $field_info->type_name);
+      }
+      else {
+        // Skip nodereference fields that either:
+        // - reference more than one type, or
+        // - are not referenceing the $parent_type
+      }
+      
+    }
+    else {
+      // Skip nodereferences field that have 0 type restrictions
+    }
+    
+  }
+  return $eligible_types;
+}
+
+
+function _relationships_is_managed($parent_type, $child_type) {
+  // Query for relationship of parent node type and child node type
+  $query = "SELECT * FROM {relationships} WHERE parent_type = '%s' AND child_type = '%s'";
+  $result_set = db_query($query, $parent_type, $child_type);
+  $relationship = db_fetch_object($result_set);
+  return $relationship != FALSE;
+}
+
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function relationships_form_alter(&$form, &$form_state, $form_id) {
+
+  $arg0 = arg(0);
+  $arg1 = arg(1);
+  $arg2 = arg(2);
+  $is_add_page = "$arg0/$arg1" == 'node/add';
+  $is_edit_page = "$arg0/$arg2" == 'node/edit'; 
+
+  if ($is_add_page || $is_edit_page) {
+  
+    $child = $form['#node']; // node object
+    
+    if ($is_add_page) {
+      // Loop through arguments to find all possible parents
+      // Criteria for being a valid parent node:
+      // - The arg loads as a node
+      // - A relationship exist, with the new node type as the child 
+      // - The relationship is defined for the current arg position
+      foreach(arg() as $arg_pos => $arg) {
+        if ($arg_pos <= 2) {
+          continue;
+        }
+        $parent = node_load($arg);
+        if ($parent) {
+          $relationship = reset(relationships_load($parent->type, $child->type));
+          if ($relationship->arg == $arg_pos) {
+            $parents[] = $parent;
+          }
+        }
+      }
+    }
+    elseif ($is_edit_page) {
+      $parents = relationships_node_get_parents($child);
+    }
+  
+    //
+    // Working with parent information, of the NODE
+    //
+    
+    // Check if this node has parents
+    if (!empty($parents)) {    
+      foreach($parents as $parent) {
+        
+        $relationship = reset(relationships_load($parent->type, $child->type));
+        if ($relationship) {
+          
+          // Set breadcrumb -- TURN INTO AN ADMINISTRATIVE-LEVEL OPTION?
+          drupal_set_breadcrumb(array(l(t('Home'), NULL), l($parent->title, 'node/'. $parent->nid)));
+          
+          // Handle nodereferences
+          relationships_relationship_form_alter_nodereference($form, $form_state, $form_id, $relationship, $parent, $child);
+          
+          // Handle authorship
+          if ($relationship->propagation_rules['author']) {
+            relationships_relationship_form_alter_author($form, $form_state, $form_id, $relationship, $parent, $child);
+          }
+
+          // Handle pubished status
+          if ($relationship->propagation_rules['publish']) {
+            relationships_relationship_form_alter_status($form, $form_state, $form_id, $relationship, $parent, $child);
+          }
+          
+          // Handle taxonomy
+          if ($relationship->propagation_rules['vocabs']) {
+            relationships_relationship_form_alter_taxonomy($form, $form_state, $form_id, $relationship, $parent, $child);
+          }
+
+          // Handle groups
+          if ($relationship->propagation_rules['groups']) {
+            relationships_relationship_form_alter_groups($form, $form_state, $form_id, $relationship, $parent, $child);
+          }
+          
+        }
+      }
+    }  
+  }
+}
+
+/**
+ * Relationship Form Alter [Nodereference]
+ * 
+ * @param unknown_type $form
+ * @param unknown_type $form_state
+ * @param unknown_type $form_id
+ * @param unknown_type $relationship
+ * @param unknown_type $parent
+ * @param unknown_type $child
+ */
+function relationships_relationship_form_alter_nodereference(&$form, &$form_state, $form_id, $relationship, $parent, $child) {
+  if (!user_access('administer nodes')) {
+    $noderef_nid = &$form[$relationship->field_name][0]['#default_value']['nid']; 
+    switch($relationship->hide) {
+      case 0: 
+        // Hide the field
+        $form[$relationship->field_name]['#access'] = FALSE;
+        break;
+      case 1: 
+        // Hide the field if it's already set
+        // BUT THIS FIELD WAS SET ABOVE
+        if (isset($noderef_nid)) {
+          $form[$relationship->field_name]['#access'] = FALSE;
+        }
+        break;
+      case 2:
+        // Hide the field if it's empty
+        if (!isset($noderef_nid)) {
+          $form[$relationship->field_name]['#access'] = FALSE;
+        }
+        break;
+      case 3:
+        // Hide the field
+        $form[$relationship->field_name]['#access'] = TRUE;
+        break;
+    }        
+  } // end - check user access
+}
+
+function relationships_relationship_form_alter_author(&$form, &$form_state, $form_id, $relationship, $parent, $child) {
+  if (!user_access('administer nodes')) {
+    $form['author']['name']['#access'] = FALSE;
+  }
+}
+
+function relationships_relationship_form_alter_status(&$form, &$form_state, $form_id, $relationship, $parent, $child) {
+  if (!user_access('administer nodes')) {
+   $form['options']['status']['#access'] = FALSE;
+  }
+}
+
+function relationships_relationship_form_alter_groups(&$form, &$form_state, $form_id, $relationship, $parent, $child) {
+  /*
+  // TODO: FIGURE OUT A WAY TO HIDE THE GROUP FIELDSET, WITHOUT
+  // LOSING THE PROPOGATION OF THE PARENT GROUPS.
+  if (!user_access('administer nodes')) {
+    $form['og_nodeapi']['visible']['og_groups']['#access'] = FALSE;
+    $form['og_nodeapi']['visible']['og_public']['#access'] = FALSE;
+    $form['og_nodeapi']['#access'] = FALSE;
+  }
+  */
+}
+
+function relationships_relationship_form_alter_taxonomy(&$form, &$form_state, $form_id, $relationship, $parent, $child) {
+
+  if (!user_access('administer nodes')) {
+    
+    //
+    // 1. Mark "managed" vocabulary as ['#access'] = FALSE;
+    //
+  
+    // Iterate through each managed vocabulary
+    $relationship_vocabs = $relationship->propagation_rules['vocabs'];
+    foreach ($relationship_vocabs as $vid) {
+      
+      $is_vocab_free_tagging = isset($form['taxonomy']['tags'][$vid]);
+      $is_vocab_checkboxes = isset($form['taxonomy'][$vid]);
+      
+      if ($is_vocab_free_tagging) {
+        
+        foreach($parent->taxonomy as $term) {
+          if ($term->vid == $vid) {
+            $terms[] = $term->name;
+          }
+        }
+        if ($terms) {
+          $form['taxonomy']['tags'][$vid]['#default_value'] = implode(', ', $terms);
+        }
+        $form['taxonomy']['tags'][$vid]['#access'] = FALSE;
+        
+      }
+      elseif ($is_vocab_checkboxes) {
+        
+        foreach($parent->taxonomy as $term) {
+          if ($term->vid == $vid) {
+            $form['taxonomy'][$vid]['#default_value'] = $term->tid;
+          }              
+        }
+        $form['taxonomy'][$vid]['#access'] = FALSE;            
+        
+      }
+    }
+    
+    //
+    // 2. Hide taxonomy fieldset if all vocabs have ['#access'] == FALSE;
+    //
+    
+    $found_any = FALSE;
+    foreach($form['taxonomy'] as $key => $value) {
+      $is_vocab_free_tagging = ($key == 'tags');
+      $is_vocab_checkboxes = ($term = taxonomy_get_term($key));
+      if ($is_vocab_free_tagging) {
+        foreach($form['taxonomy']['tags'] as $vocabulary) {
+          $found_any = !isset($vocabulary['#access']) || $vocabulary['#access'] == TRUE;
+          if ($found_any) {
+            break;
+          }
+        }
+      }
+      elseif ($is_vocab_checkboxes) {
+        $found_any = !isset($form['taxonomy'][$key]['#access']) || $form['taxonomy'][$key]['#access'] == TRUE;
+      }
+      if ($found_any) {
+        break;
+      }
+    }
+  
+    //
+    // 3. Hide fieldset if no vocabs are accessable
+    //
+    
+    if (!$found_any) {
+      $form['taxonomy']['#access'] = FALSE;
+    }
+    
+  } // end user access check
+}

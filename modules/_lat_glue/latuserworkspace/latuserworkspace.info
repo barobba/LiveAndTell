@@ -1,0 +1,4 @@
+name = LAT User Workspace
+package = .LiveAndTell
+core = 6.x
+dependencies[] = content

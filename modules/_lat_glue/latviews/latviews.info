@@ -1,0 +1,7 @@
+ ; $Id: $
+
+name = LAT Views
+description = Views definitions
+package = .LiveAndTell
+dependencies[] = views
+core = 6.x

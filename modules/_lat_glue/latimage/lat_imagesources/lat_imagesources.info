@@ -1,0 +1,5 @@
+package = .LiveAndTell
+name = LAT Image Sources
+description = UI/REST-API for Flickr, Wikipedia, etc.
+core = 6.x
+dependencies[] = services

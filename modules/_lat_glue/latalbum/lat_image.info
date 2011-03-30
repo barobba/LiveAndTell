@@ -1,0 +1,4 @@
+name = LAT Images
+description = Customization to LAT Image nodes.
+package = .LiveAndTell
+core = 6.x

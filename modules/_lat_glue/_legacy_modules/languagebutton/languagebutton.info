@@ -1,0 +1,5 @@
+; $Id$
+name = Language Button
+description = Automatically sets the language for a given form.
+package = .LiveAndTell
+core = 6.x

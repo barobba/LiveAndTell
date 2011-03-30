@@ -1,0 +1,5 @@
+; $Id$
+name = Live-and-Tell Images
+description = Customizations to Live-and-Tell images
+package = .LiveAndTell
+core = 6.x

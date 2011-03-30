@@ -1,0 +1,4 @@
+name = Lakota Coloring Book
+description = Lakota Dictionary and Coloring Book 
+package = .LiveAndTell
+core = 6.x

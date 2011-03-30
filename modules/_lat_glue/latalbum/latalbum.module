@@ -1,0 +1,75 @@
+<?php
+/**
+ * 1. Add CSS file
+ * 2. Append theme path
+ * 3. Change template filename
+ */ 
+ 
+function latalbum_init() {
+  $path = drupal_get_path('module', 'latalbum');
+  drupal_add_css("$path/theme/css/latalbum-lat-album.css");
+  drupal_add_css("$path/theme/css/latalbum-lat-album-image.css");
+  drupal_add_css("$path/theme/css/latalbum-lat-album-image-term.css");
+  drupal_add_css("$path/theme/css/latalbum-album-editor.css");
+}
+
+function latalbum_menu() {
+  return array(
+    'lat/user/type/album/%' => array(
+      'title' => '',
+      'page callback' => 'theme',
+      'page arguments' => array('lat_album_editor', 4),
+      'access callback' => 'user_is_logged_in',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_nodeapi(). 
+ * @param unknown_type $node
+ * @param unknown_type $op
+ * @param unknown_type $a3
+ * @param unknown_type $a4
+ */
+function latalbum_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type == 'lnt_album') {
+    switch($op) {
+      case 'view':
+        $is_teaser = $a3;
+        $is_page = $a4;
+        if ($is_teaser) {
+          $album_images = views_embed_view('lat_picturebook_teaser_thumbs', 'default', $node->nid);
+          $node->content['album_images'] = array(
+            '#value' => $album_images,
+            '#weight' => 999
+          );
+        }
+        elseif ($is_page) {
+          $album_images = views_embed_view('lat_album_images', 'default', $node->nid);
+          $node->content['album_images'] = array(
+            '#value' => $album_images, 
+            '#weight' => 0
+          );
+        }
+        break;
+    }
+  }
+}
+
+function latalbum_theme($existing, $type, $theme, $path) {
+  $theme = array(
+    'lat_album_editor' => array(
+      'arguments' => array('album_nid' => NULL),
+      'template' => 'lat-album-editor',
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+  );
+  return $theme;
+}
+
+function latalbum_theme_registry_alter(&$reg) {
+  //Add this module's theme folder to the path
+  $path = drupal_get_path('module', 'latalbum');
+  $reg['node']['theme paths'] []= "$path/theme";
+}

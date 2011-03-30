@@ -1,0 +1,5 @@
+name = Dynamic Scale
+description = Allows an 'imagecache_scale' imagecache preset to be created dynamically via menu or theme function.
+package = .LiveAndTell
+dependencies[] = imagecache
+core = 6.x

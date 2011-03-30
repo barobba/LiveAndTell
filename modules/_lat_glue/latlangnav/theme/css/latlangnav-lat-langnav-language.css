@@ -1,0 +1,45 @@
+
+.language-details-page h3.column-heading {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+/*********************************************************************
+ * COLUMN LEFT
+ *********************************************************************/
+.language-details-page td.content-left {
+  width: 25%;
+  /*padding-top: 43px;*/
+  /*padding-top: 11px;*/
+}
+.language-details-page div.content-type-list {
+  margin-bottom: 0px;
+}
+
+/*********************************************************************
+ * COLUMN MIDDLE
+ *********************************************************************/
+.language-details-page td.content-middle {
+  /*width: 53%;*/
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.language-details-page div#recent-content .views-row{
+  margin-top: 0px;
+  margin-bottom: 4px;
+}
+
+/*********************************************************************
+ * COLUMN RIGHT
+ *********************************************************************/
+.language-details-page td.content-right{
+  width: 25%;
+}
+/*
+.language-details-page div#authors {
+  margin-top: 4px;
+}
+*/
+.language-details-page div#authors .view-authors-by-lang .view-content div {
+  display: inline;
+}

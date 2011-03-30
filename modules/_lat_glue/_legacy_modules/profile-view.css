@@ -1,0 +1,16 @@
+
+/**
+ * Profile content list
+ */
+div.profile .views-field-view-node,
+div.profile .views-field-edit-node {
+  width: 50px;
+}
+div.profile .views-field-status {
+  width: 50px;
+  text-align: center;
+  
+}
+div.profile .views-field-tid {
+  width: 100px;
+}

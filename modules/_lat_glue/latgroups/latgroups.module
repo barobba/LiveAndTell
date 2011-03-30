@@ -1,0 +1,42 @@
+<?php
+/**
+ * Page that redirects to "My Groups", only if user has groups\
+ *
+ * Settings:
+ *   - path: og/my/redirect
+ *   - access: checks user has groups
+ */
+
+ 
+ 
+/**
+ * Implementation of hook_menu().
+ */ 
+function latgroups_menu() {
+  return array(
+    // SPECIAL USE CASE WHERE USER IS NOT PART OF ANY GROUP,
+    // THEN WE WOULD LIKE TO HIDE THIS PATH FROM THE MENU.
+    // USERS CAN STILL TYPE THIS PATH IN DIRECTLY.
+    'og/my/redirect' => array(
+      'title' => 'User Groups Redirect',
+      'page callback' => '_latgroups_action',
+      'access callback' => '_latgroups_has_groups',
+    ),
+  );
+}
+
+/**
+ * Simply redirects user to groups page
+ */
+function _latgroups_action() {
+  drupal_goto('og/my');
+  return l('My Groups', 'og/my');
+}
+
+/**
+ * Checks user is part of any group
+ */
+function _latgroups_has_groups() {
+  $user = $GLOBALS['user'];
+  return isset($user->og_groups) && count($user->og_groups) > 0;
+}

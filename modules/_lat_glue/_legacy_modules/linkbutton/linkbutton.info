@@ -1,0 +1,5 @@
+; $Id$
+name = Linkbutton
+description = Uses javascript to turn a link into a button.
+package = .LiveAndTell
+core = 6.x

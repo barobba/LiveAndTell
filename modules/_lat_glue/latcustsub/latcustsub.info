@@ -1,0 +1,4 @@
+name = LAT Customer Subscriptions
+description = Overrides theming for customer subscriptions
+package = .LiveAndTell
+core = 6.x

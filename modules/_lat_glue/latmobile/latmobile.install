@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * Implementation of 'hook_install'
+ */
+function latmobile_install() {
+  drupal_install_schema('latmobile');
+}
+
+/**
+ * Implementation of 'hook_uninstal'
+ */
+function latmobile_uninstall() {
+  drupal_uninstall_schema('latmobile');
+  variable_del('latmobile_carrier_domains');
+}
+
+/**
+ * Implementation of 'hook_schema'
+ */
+function latmobile_schema() {
+  $schema['latmobile_registration'] = array(
+    'description' => '',
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The {users}.uid of the profile user.',
+      ),
+      'mobile_number' => array(
+        'description' => 'User mobile number',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'mobile_number_filtered' => array(
+        'description' => 'User mobile number - digits only',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      /*
+      'verify_msg_timestamp' => array(
+        ...
+      ),
+      */
+      'is_verified' => array(
+        'description' => 'User number has been verified',
+        'type' => 'int',
+        'size' => 'tiny',      
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('uid', 'mobile_number_filtered'),
+    'indexes' => array(
+      'uid' => array('uid'),
+      'mobile_number_filtered' => array('mobile_number_filtered'),
+    ),
+  ); 
+  return $schema;
+}

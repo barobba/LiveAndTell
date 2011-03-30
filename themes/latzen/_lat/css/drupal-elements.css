@@ -1,0 +1,121 @@
+
+/*****************************************************************************
+ * META
+ ****************************************************************************/
+body.page-node div.meta {
+  margin: 8px;
+}
+
+/*****************************************************************************
+ * COMMENTS
+ ****************************************************************************/
+.comment {
+  margin-top: 8px;
+  padding: 8px;
+  border: solid 1px #bbb;
+  background-color: #eee;
+}
+.comment h3 {
+  margin: 0px;
+}
+.comment h3 a {
+  text-decoration: none;
+  color: black;
+}
+.comment .submitted,
+.comment .submitted a {
+  color: #666;
+}
+.comment .links li {
+  padding-left: 0px;
+}
+
+#comment-form #edit-comment-wrapper textarea {
+  height: 70px;
+}
+ 
+/*****************************************************************************
+ * ???
+ ****************************************************************************/
+.content-add-more {
+  padding-top: 8px;
+  padding-bottom: 32px;
+  border-bottom: solid 1px black;
+  margin-bottom: 16px;
+}
+
+/*****************************************************************************
+ * LOGIN PAGE
+ ****************************************************************************/
+/*
+body.page-user h1#page-title {
+  padding-left: 292px;
+}
+body.page-user form {
+  padding-left: 285px;
+}
+*/
+
+/*****************************************************************************
+ * MESSAGES
+ ****************************************************************************/
+.messages {
+  border: 1px solid #999;
+  background-color: #eee;
+  padding: 8px;
+  margin: 8px;
+}
+/*****************************************************************************
+ * TAB BAR
+ ****************************************************************************/
+#tab-bar {
+  /* default tab colors: bbb, (ccc), ddd, eee */
+	padding: 3px;
+	background-color: #ddd;
+  border-top: solid 2px #bbb;
+}
+#tab-bar ul {
+	margin: 0px;
+	padding: 0px;
+  border-style: none;
+	text-align: center;
+  line-height: 2.6em;
+}
+#tab-bar ul.primary {
+}
+#tab-bar li {
+  padding: 0px;
+  border-style: none;
+}
+#tab-bar a {
+  margin: 0px;
+  border: solid 1px #bbb;
+	color: black;
+	padding: 4px 12px;
+}
+#tab-bar a:hover {
+  margin: 0px;
+  border: solid 1px #bbb;
+  background-color: #eee;
+	text-decoration: underline;
+}
+#tab-bar ul.primary li.active a {
+  background-color: white;
+}
+#tab-bar ul.secondary li.active a {
+  background-color: #eee;
+}
+body.user-account-settings #tab-bar ul.primary {
+  display: none;
+}
+
+/*****************************************************************************
+ * BREADCRUMBS
+ ****************************************************************************/
+#breadcrumb {
+	padding: 8px 24px;
+	border-bottom: solid 1px #ccc;
+}
+#breadcrumb .breadcrumb {
+	padding: 0px;
+}

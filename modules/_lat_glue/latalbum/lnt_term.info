@@ -1,0 +1,5 @@
+; $Id$
+name = Live-and-Tell Terms
+description = Customizations to Live-and-Tell terms
+package = .LiveAndTell
+core = 6.x

@@ -1,0 +1,5 @@
+name = LAT Groups
+description = User groups customizations
+package = .LiveAndTell
+core = 6.x
+dependencies []= og

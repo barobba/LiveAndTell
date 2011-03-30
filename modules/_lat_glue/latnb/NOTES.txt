@@ -1,0 +1,37 @@
+
+// DON'T FORGET TO IMPLEMENT "COPY TRACKING (aRb) SYSTEM"
+// TRY THIS: 
+//     function _lat_node_copy() {
+//       $old_nid = $old->nid;
+//       $old->nid = NULL;
+//       node_save($old)
+//       $new_nid = $old->nid;
+//       _lat_document_node_copy($new_nid, 'copy-of', $old_nid);
+//     }
+
+
+
+
+Notebooks (for audio call it a "Playlist")
+--------------------------------------------------------------
+
+ Create a:
+ 
+   (*) Picture notebook
+   ( ) Story book
+   ( ) Flashcards
+   ( ) Worksheet
+         ____________________   ______
+ Title: |____________________| [Create]
+
+--------------------------------------------------------------
+Notebooks (Views):
+
+  * ..................................
+  * ..................................
+  * ..................................
+  * ..................................
+  * ..................................
+  * ..................................
+  * ..................................
+  * ..................................

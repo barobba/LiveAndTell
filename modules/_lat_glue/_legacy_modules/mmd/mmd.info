@@ -1,0 +1,5 @@
+; $Id$
+name = Formatter for Multimedia Dictionary
+description = Formats a Multimedia Dictionary for easy-of-use.
+package = .LiveAndTell
+core = 6.x

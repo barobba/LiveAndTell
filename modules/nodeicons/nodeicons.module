@@ -1,0 +1,27 @@
+<?php
+/**
+ * Node variables - Icon path
+ * Page preprocessing - Node icons as favicon
+ */
+
+function nodeicons_theme($existing, $type, $theme, $path) {    
+  return array(  
+    'lat_nodetype_icon' => array(
+      'arguments' => array('nodetype' => NULL, 'preset' => ''),
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+  );
+}
+
+function nodeicons_preprocess_page(&$vars) {
+  // TODO Change favicon here for "nodeicon" node types.
+}
+
+function nodeicons_preprocess_node(&$vars) {
+  $node = $vars['node'];
+  
+  // TODO: THE THEME NEEDS OPTOMIZING.
+  $vars['node_icon'] = theme('lat_nodetype_icon', $node->type);
+  $vars['node_icon_small'] = theme('lat_nodetype_icon', $node->type, 'thumbnail_15');
+}

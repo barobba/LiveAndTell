@@ -1,0 +1,77 @@
+
+
+
+.view-lat-picturebook-teaser-thumbs .view-content div {
+  display: inline;
+}
+
+.view-lat-picturebook-teaser-thumbs .view-content img {
+  border: solid 1px black;
+}
+
+
+
+
+
+
+
+
+
+body.node-type-lnt-album table#lat-page-layout-table td.right {
+  width: 25%;
+}
+
+/**
+ * IMAGE GRID
+ */
+body.node-type-lnt-album div.view-lat-album-images table.views-view-grid {
+  width: 100%;
+}
+body.node-type-lnt-album div.view-lat-album-images table.views-view-grid td {
+  padding-top: 24px;
+}
+body.node-type-lnt-album div.view-lat-album-images table.views-view-grid div.views-field-field-lnt-image-fid {
+  text-align: center;
+}
+body.node-type-lnt-album div.view-lat-album-images table.views-view-grid div.views-field-field-lnt-image-fid a img {
+  border: solid 2px white;
+}
+body.node-type-lnt-album div.view-lat-album-images table.views-view-grid div.views-field-field-lnt-image-fid a:hover img {
+  border: solid 2px blue;
+}
+
+/**
+ * LAT Images flash view
+ */
+.view-lnt-album-images-flash td {
+  vertical-align: top;
+  padding-bottom: 32px;
+}
+
+.view-lnt-album-images-flash .view-content {
+  text-align: center;
+}
+.view-lnt-album-images-flash {
+  width: 478px;
+}
+
+.view-lnt-album-images-flash .views-field-field-lnt-image-caption-value,
+.view-lnt-album-images-flash .views-field-field-lnt-image-caption-audio-value,
+.view-lnt-album-images-flash .views-field-field-lnt-image-trans-value,
+.view-lnt-album-images-flash .views-field-field-lnt-image-trans-audio-value {
+  text-align: left;
+}
+
+/**
+ * LAT Albums
+ */
+body.node-type-lnt_album h1.title {
+  margin-top: 32px;
+}
+div.field-field-lnt-album-description {
+  margin: 32px 0px;
+}
+div.view-lnt-album-images-flash .pager {
+  position: relative;
+  left: 50%;
+}

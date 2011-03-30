@@ -1,0 +1,6 @@
+; $Id$
+name = Audio Field
+description = Defines an audio field type.
+dependencies[] = content
+package = CCK
+core = 6.x

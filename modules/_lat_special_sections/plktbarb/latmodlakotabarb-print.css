@@ -1,0 +1,89 @@
+@media print {
+  #option-table, #embedded-flash {
+    display: none;
+  }
+  #printout {
+    margin: 0px auto;
+  }
+}
+
+@media screen, projection {
+
+  #printout {
+    margin: 0px auto;
+    display: none;
+  }
+  
+  body {
+    background-color: gray;
+    background-image: url(http://liveandtell.com/sites/liveandtell.com/modules/_lat_special_sections/plktbarb/background-buffalohide4.jpg);
+    margin: 0px;
+  }
+
+  /**
+   * BREASTPLATE DECORATION
+   */
+  #breastplate-left,
+  #breastplate-right {
+    width: 84px;
+    background-image: url(http://liveandtell.com/sites/liveandtell.com/modules/_lat_special_sections/plktbarb/breast-plate.png);
+  }
+
+  #printout-page {
+    width: 760px;
+    margin: 0px auto;
+    text-align: center;
+    /*
+    border: solid thin black;
+    */
+  }
+
+  #option-table {
+    margin: 0px auto;
+    height: 105px;
+    width: 627px;
+  }
+
+  #option-table td{
+    vertical-align: middle;
+  }
+
+  #heading {
+    background-color: white;
+    text-align: left;
+  }
+
+  #heading img {
+    float: left;
+    margin-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+  }
+
+  #heading h1 {
+    padding-top: 30px;
+    font-style: arial;
+    margin: 0px;
+  }
+
+  #back-option {
+    background-color: white;
+    width: 149px;
+    height: 75px;
+    /*border: solid thin black;*/
+  }
+
+  #print-option {
+    background-color: white;
+    margin: 0px auto;
+    width: 151px;
+    height: 75px;
+  }
+
+  #pronunciation-option {
+    background-color: white;
+    width: 149px;
+  }
+
+}

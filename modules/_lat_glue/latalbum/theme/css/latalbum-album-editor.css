@@ -1,0 +1,52 @@
+
+#album-editor {
+  padding-top: 8px;
+}
+
+#album-editor table#lat-page-layout-table {
+  margin-top: 8px;
+}
+
+#album-editor .page-layout-right {
+  padding-left: 8px;
+  width: 25%;
+}
+
+/****************
+ * ALBUM IMAGES
+ ****************/
+#album-editor .view-lat-album-editor-images {
+}
+#album-editor .view-lat-album-editor-images .warning {
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+#album-editor .view-lat-album-editor-images table {
+  width: 100%;
+}
+#album-editor .view-lat-album-editor-images table tbody td {
+  vertical-align: middle;
+}
+#album-editor .view-lat-album-editor-images table tbody td.views-field-field-lnt-image-fid {
+  float: left;
+  /*line-height: 64px;*/
+  /*width: 64px;*/
+  /*height: 64px;*/
+  text-align: center;
+  /*background-color: black;*/
+  padding: 4px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+#album-editor .view-lat-album-editor-images table tbody td.views-field-field-lnt-image-fid img {
+  /*line-height: 64px;*/
+}
+#album-editor .view-lat-album-editor-images table tbody td.views-field-nothing p {
+  margin: 0px;
+  display: inline;
+}
+
+#album-editor .view-lat-album-editor-images table tbody td.views-field-nothing cusotm-field-caption,
+#album-editor .view-lat-album-editor-images table tbody td.views-field-nothing custom-field-caption-translation {
+  white-space: nowrap;
+}

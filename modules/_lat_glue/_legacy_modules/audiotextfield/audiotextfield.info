@@ -1,0 +1,6 @@
+; $Id$
+name = Audio Textfield
+description = Defines an audio textfield type.
+dependencies[] = content
+package = CCK
+core = 6.x

@@ -1,0 +1,38 @@
+<?php
+
+function latalbum_preprocess_node(&$vars) {
+  $node = $vars['node'];
+  if ($node->type == 'lnt_album') {
+    
+    // Page variables
+    if ($vars['page']) {
+      drupal_set_title('');
+    }
+    
+    // Teaser variables
+    if ($vars['teaser']) {
+      // Get entire album
+      $view = views_get_view('lat_album_images');
+      $view->set_arguments(array($node->nid));
+      $view->execute();
+      // Store first NID
+      $first_nid = $view->result[0]->nid;
+      $vars['first_page_nid'] = $first_nid;
+      // Override the "node_url" variable
+      $vars['node_url'] = base_path()."node/$first_nid";
+      // Override the "view more" variable
+      $vars['lat_node_view_more'] = l('View more', "node/$first_nid");
+    }
+    
+  }
+}
+
+function latalbum_preprocess_lat_album_editor(&$vars) {
+
+  $lat_album = node_load($vars['album_nid']);
+  
+  $vars['lat_album_editor_images'] = views_embed_view('lat_album_editor_images', 'default', $vars['album_nid']);
+  $vars['lat_album'] = $lat_album;
+  $vars['lat_album_title'] = $lat_album->title;
+  $vars['lat_album_description'] = $lat_album->field_lnt_album_description[0]['value'];
+}

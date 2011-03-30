@@ -1,0 +1,5 @@
+name = LAT Watchdog
+description = Log management module for the LiveAndTell website.
+package = .LiveAndTell Admin
+core = 6.x
+

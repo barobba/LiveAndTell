@@ -1,0 +1,51 @@
+/*****************************************************************************
+ * TEASER - CONTAINER
+ *****************************************************************************/
+.node-teaser {
+  margin-bottom: 4px;
+}
+.node-teaser.un-published {
+  background-color: #eee;
+}
+.node-teaser .node-content-wrapper {
+  padding: 4px;
+}
+.node-teaser .node-content-wrapper-layout-table td.node-teaser-left {
+  width: 22px;
+}
+.node-teaser .node-content-wrapper-layout-table td.node-teaser-right {
+  width: 100%;
+}
+.node-teaser .node-content {
+  border-left: solid 1px #ddd; 
+  padding: 4px 0px 8px 8px;
+  margin-top: -8px; 
+  margin-bottom: -8px;
+}
+
+/*****************************************************************************
+ * TEASER - NODE ELEMENTS
+ *****************************************************************************/
+.node-teaser .language {
+  float: right;
+  padding-right: 4px;
+}
+.node-teaser h3 {
+  margin: 0px;
+}
+.node-teaser .submitted {
+  color: #888;
+  margin-bottom: 4px;
+}
+.node-teaser .submitted a {
+  color: #888;
+}
+
+/*****************************************************************************
+ * TEASER - NODETYPE ICON
+ *****************************************************************************/
+.node-teaser .node-icon {
+  height:100%; 
+  padding-top: 4px; 
+  padding-right: 2px;
+}

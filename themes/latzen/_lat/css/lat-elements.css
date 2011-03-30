@@ -1,0 +1,101 @@
+@charset "utf-8";
+/* CSS Document */
+
+.lat-table tbody {
+	border-style: none;
+}
+table#lat-page-layout-table {
+	width: 100%;
+}
+table#lat-page-layout-table tbody {
+	border-style: none;
+}
+table#lat-page-layout-table td {
+	vertical-align: top;
+}
+
+/**************************************
+ * NODE TABLE LAYOUT
+ **************************************/
+.node-content-wrapper-layout-table {
+  width: 100%;
+}
+.node-content-wrapper-layout-table tbody {
+  border-style: none;
+} 
+.node-content-wrapper-layout-table td {
+  vertical-align: top;
+} 
+
+/******************
+ * USER TOOLBAR
+ ******************/
+ 
+#user-toolbar {
+  border-top: 1px solid #ccc;
+  padding-top: 6px;
+  padding-left: 2px;
+  padding-right: 8px;
+	padding-bottom: 7px;
+  margin-top: 4px;
+}
+#user-toolbar #user-options {
+	font-weight: bold;
+	float: left;
+}
+#user-toolbar #user-information {
+  text-align: right;
+}
+#user-toolbar ul.links {
+	margin: 0px;
+}
+
+/******************
+ * ROUNDED CORNERS
+ ******************/
+ 
+.rounded-corners-container {
+  border-left: solid 1px #ddd;
+  border-right: solid 1px #ddd;
+}
+
+b.rounded-corners b.rnd1,
+b.rounded-corners b.rnd2,
+b.rounded-corners b.rnd3
+{
+	display: block;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	border: solid 0px;
+  border-left: solid 1px #ddd;
+  border-right: solid 1px #ddd;
+	font-size: 1px;
+  height: 1px;
+  line-height: 1px;
+}
+b.rounded-corners b.rnd1 {
+  background-color: #ddd;
+	margin-left: 4px;
+	margin-right: 4px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+b.rounded-corners b.rnd2 {
+	border-left: solid 2px;
+	border-right: solid 2px;
+	border-color: #ddd;
+	margin-left: 2px;
+	margin-right: 2px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+b.rounded-corners b.rnd3 {
+	border-left: solid 1px;
+	border-right: solid 1px;
+	border-color: #ddd;
+	margin-left: 1px;
+	margin-right: 1px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	height: 2px;
+}

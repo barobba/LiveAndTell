@@ -1,0 +1,25 @@
+
+body.page-og h1#page-title {
+  margin-bottom: 16px;
+  padding-left: 0px;
+}
+.view-og-my table {
+  width: 100%;
+  border: 1px solid black;
+}
+.view-og-my a {
+  text-decoration: none;
+}
+.view-og-my .views-field-title {
+  font-weight: bold;
+  font-size: 14px;
+}
+.view-og-my table td,
+.view-og-my table th
+{
+  border: 1px solid black;
+}
+.view-og-my .opml-icon {
+  display: block;
+  margin-top: 16px;
+}

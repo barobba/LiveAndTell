@@ -1,0 +1,21 @@
+
+    Search page: lat/user/images/search/remote
+    
+  | Flickr  |  Wikimedia Commons                            |
+  |  ______________________________________                 |
+  | [______________________________________] [Search]       |
+  |                                                         |
+  |  [       ]  [       ]  [       ]  [       ]  [       ]  |
+  |  [ IMAGE ]  [ IMAGE ]  [ IMAGE ]  [ IMAGE ]  [ IMAGE ]  |
+  |  [       ]  [       ]  [       ]  [       ]  [       ]  |
+  |  Tag image  Tag image  Tag image  Tag image  Tag image  |
+  |                                                         |
+  |  [       ]  [       ]  [       ]  [       ]  [       ]  |
+  |  [ IMAGE ]  [ IMAGE ]  [ IMAGE ]  [ IMAGE ]  [ IMAGE ]  |
+  |  [       ]  [       ]  [       ]  [       ]  [       ]  |
+  |  Tag image  Tag image  Tag image  Tag image  Tag image  |
+   ---------------------------------------------------------
+
+    x Start off with Flickr only.
+    x Search will re-query the images below.
+    Images will be linked for tagging.

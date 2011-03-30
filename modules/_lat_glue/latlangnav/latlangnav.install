@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * Implementation of hook_schema().
+ */
+function latlangnav_schema() {
+  $schema['user_lat_language_preference'] = array(
+    'description' => 'Stores user language term for LAT',
+    'fields' => array(
+      'uid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'tid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+    'primary key' => array('field_name'),      
+    ),
+  );
+  return $schema;
+}
+
+function latlangnav_install() {
+  drupal_install_schema('user_lat_language_preference');
+}
+
+function latlangnav_uninstall() {
+  drupal_uninstall_schema('user_lat_language_preference');
+}

@@ -1,0 +1,4 @@
+name = LAT Groups (OG) Administration
+description = Special pages for administering groups (OG)
+core = 6.x
+dependencies []= og

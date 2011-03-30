@@ -1,0 +1,6 @@
+; $Id$
+name = Bilingual Example
+description = Defines a bilingual example field type.
+dependencies[] = content
+package = CCK
+core = 6.x

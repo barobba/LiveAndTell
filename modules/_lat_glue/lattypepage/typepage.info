@@ -1,0 +1,4 @@
+name = LAT Type Pages
+description = A landing page for admin-defined (currently hardcoded) content types.
+package = .LiveAndTell
+core = 6.x

@@ -1,0 +1,42 @@
+/*******************************************************************
+ * LANGUAGE LISTING
+ *******************************************************************/
+ 
+/* TABLE FORMAT */
+.lat-language-listing table {
+  width: 100%;
+  background-color: white;
+}
+.lat-language-listing table th,
+.lat-language-listing table td {
+  padding: 2px;
+  border: solid 1px #ddd;
+  background-color: white;
+}
+
+/* LIST FORMAT */
+.lat-language-listing .item-list h3 {
+  display: none;
+}
+
+/*******************************************************************
+ * LANGUAGE LISTING
+ *******************************************************************/
+ 
+/* TABLE FORMAT */
+.lat-nodetype-list-by-language table {
+  width: 100%;
+  background-color: white;
+}
+.lat-nodetype-list-by-language table th,
+.lat-nodetype-list-by-language table td {
+  padding: 2px;
+  border: solid 1px #ddd;
+  background-color: white;
+}
+
+/* LIST FORMAT */
+.lat-nodetype-list-by-language h3 {
+  display: none;
+}
+

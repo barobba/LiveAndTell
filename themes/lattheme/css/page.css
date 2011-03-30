@@ -1,0 +1,78 @@
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+  /*font-family: "Aboriginal Sans", Tahoma,Verdana,Arial,Helvetica,sans-serif*/
+  font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
+	font-size: .8em;
+	background-color: #eee;
+}
+h1#page-title {
+	padding-left: 8px;
+  margin: 0px;
+}
+/*
+body.page-user h1#page-title {
+  padding-left: 292px;
+}
+body.page-user form {
+  padding-left: 285px;
+}
+*/
+#page-wrapper {
+	width: 955px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 16px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	background-color: white;
+	text-align: left;
+}
+#page-header {
+	padding-top: 4px;
+}
+#site-name {
+	float: left;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 1.3em;
+	padding: 0px;
+	padding-left: 8px;
+	margin: 0px;
+	margin-top: 20px;
+}
+#site-name a {
+	color: black;
+}
+#site-name a:hover {
+	color: black;
+	text-decoration: underline;
+}
+#page-navigation {
+  height: 53px;
+	text-align: right;
+}
+#page-navigation-upper {
+	font-weight: bold;
+	font-size: 1.1em;
+	/*height: 22px;*/
+}
+#page-navigation-lower {
+	padding-bottom: 4px;
+}
+#page-content {
+	text-align: left;
+}
+#content-content {
+  border-top: solid 1px #ccc;
+	padding: 8px 8px 16px 8px;
+}
+body.front #content-content,
+body.page-node #content-content,
+body.page-sp #content-content,
+body.page-user #content-content {
+	padding: 8px 8px 16px 8px;
+}

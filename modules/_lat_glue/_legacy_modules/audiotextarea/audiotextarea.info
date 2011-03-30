@@ -1,0 +1,6 @@
+; $Id$
+name = Audio Textarea
+description = Defines an audio textarea type.
+dependencies[] = content
+package = CCK
+core = 6.x

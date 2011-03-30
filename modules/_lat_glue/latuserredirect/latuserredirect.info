@@ -1,0 +1,5 @@
+name = LAT User Redirect
+description = Control tower for user landing pages
+package = .LiveAndTell
+core = 6.x
+

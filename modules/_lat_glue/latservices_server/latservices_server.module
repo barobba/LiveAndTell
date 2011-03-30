@@ -1,0 +1,31 @@
+<?php
+
+function latservices_server_server_info() {
+  return array(
+    '#name' => 'LAT Custom Server',
+    '#path' => 'lat',
+  );
+} 
+
+// Handle requests to 'services/lat'
+function latservices_server_server() {
+  $method_wrappers = array();
+  $methods = services_get_all();    // Get all "service" methods
+  foreach ($methods as $method) {
+    $method_name  = $method['#method']; 
+    $wrapper      = '_latservices_server_method_wrapper';
+    $args         = $method['#args'];    
+    $args         = array_merge(array($method['#return']), $args);
+    $help         = $method['#help'];
+    $method_wrappers []= array($method_name, $wrapper, $args, $help);
+  }
+  return $callbacks;
+}
+
+function _latservices_server_method_wrapper() {
+  $args = func_get_args();
+//  $method_name = 'HOW_TO_FIND_THIS?';
+//  $results = services_method_call($method_name, $args);
+//  return $results;
+  return 'test';
+}

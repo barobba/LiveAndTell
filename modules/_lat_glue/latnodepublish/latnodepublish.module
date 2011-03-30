@@ -1,0 +1,9 @@
+<?php
+
+function latnodepublish_form_alter(&$form, &$form_state, $form_id) {
+  if (preg_match('/.*\\_node\\_form/', $form_id)) {
+    $form['options']['#collapsed'] = FALSE;
+  } else {
+    // Not the right form, so do nothing.
+  }
+}

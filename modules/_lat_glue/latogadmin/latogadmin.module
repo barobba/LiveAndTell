@@ -1,0 +1,34 @@
+<?php
+
+function latogadmin_menu() {
+  return array(
+    'admin/og/' => array(
+      'title' => 'Groups (OG) Admin Options',
+      'page callback' => '_latogadmin_adminopts',
+      'access callback' => 'user_access',
+      'access arguments' => array('access administration menu'),
+    ),
+  );
+}
+
+function _latogadmin_adminopts() {
+
+  //Show a list of groups
+  //...
+  //operations
+  //
+  
+  $group_options = array(
+   'Add Group' => 'node/add/og-group',
+  //TODO: List groups
+  );
+  $user_options = array(
+   '' => 'node/add/og-group',
+   '' => '',
+   '' => '',
+   '' => '',
+   '' => '',
+  );
+  foreach ($options as $option => $url) {
+  }
+}

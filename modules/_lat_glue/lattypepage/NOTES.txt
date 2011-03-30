@@ -1,0 +1,25 @@
+
+typepage_init
+
+typepage_menu
+  path/to/TYPE              => theme(typepage)
+  path/to/TYPE/%            => theme(typepage_by_language)
+  path/to/TYPE/%/author/%   => theme(typepage_by_language_and_author)
+  path/to/TYPE/%/add        => _typepage_create_redirect
+  
+typepage_theme
+  (Templates)
+  
+FORM API:
+  typepage_form_alter
+  _typepage_form
+  _typepage_form_submit
+  
+NODE API:
+  typepage_nodeapi
+  
+VIEWS API:
+  typepage_views_query_alter
+    'lesson_authors_by_language'
+    'authors_by_type_lang'
+    'authors_by_lang'

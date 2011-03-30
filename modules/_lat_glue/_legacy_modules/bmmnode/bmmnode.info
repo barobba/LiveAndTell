@@ -1,0 +1,5 @@
+; $Id$
+name = Morpheme matching activity
+description = Adds an "Add Entry" button to Morpheme matching activity node.
+package = .LiveAndTell
+core = 6.x

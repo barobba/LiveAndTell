@@ -1,0 +1,4 @@
+name = LAT Node Publish
+description = Show the publishing fieldset.
+package = .LiveAndTell
+core = 6.x

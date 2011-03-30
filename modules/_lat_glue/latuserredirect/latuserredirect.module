@@ -1,0 +1,64 @@
+<?php
+
+function latuserredirect_menu() {
+  return array(
+    'user/redirect/%' => array(
+      'title' => 'Control tower for user landing pages',
+      'page callback' => '_latuserredirect_handler',
+      'page arguments' => array(2),
+      'access callback' => 'user_is_logged_in',
+    ),
+    'user/redirect/editor/%node' => array(
+      'title' => 'Control tower for user landing pages',
+      'page callback' => '_latuserredirect_editor_handler',
+      'page arguments' => array(3),
+      'access callback' => 'user_is_logged_in',
+    ),
+  );
+}
+
+function _latuserredirect_editor_handler($node) {
+  $user = user_uid_optional_load();
+  $uid = $user->uid;
+  $nid = $node->nid;
+  switch($node->type) {
+    case 'lnt_album':
+      drupal_goto("lat/user/type/album/$nid");
+      break;
+    default:
+      drupal_goto("node/$nid/edit");
+      break;
+  }
+}
+
+function _latuserredirect_handler($direction) {
+  $user = user_uid_optional_load();
+  $uid = $user->uid;
+  switch($direction) {
+    case 'nextsteps':
+    case 'activities':
+    case 'user-menu':
+    case 'control-panel':
+      drupal_goto("lat/user/nextsteps");
+      break;
+    case 'workspace':
+      drupal_goto("lat/user/workspace");
+      break;
+    case 'images':
+      drupal_goto("images/$uid");
+      break;
+    case 'dashboard':
+      drupal_goto("user/$uid/dashboard");
+      break;
+    case 'account-settings':
+      drupal_goto("user/$uid/edit");
+      break;
+    case 'profile':
+      drupal_goto("user");
+      break;
+    default:
+      drupal_set_message('Unable to redirect: the requested page could not be found.');
+      drupal_goto('<front>');
+      break;
+  }
+}

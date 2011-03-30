@@ -1,0 +1,45 @@
+<?php
+/**
+ * 1. Add CSS file
+ * 2. Append theme path
+ * 3. Change template filename
+ */ 
+ 
+function latuserprofile_init() {
+  $modulepath = drupal_get_path('module', 'latuserprofile');
+  drupal_add_css("$modulepath/theme/css/latuserprofile-user-profile.css");
+}
+
+function latuserprofile_theme_registry_alter(&$reg) {
+  $modulepath = drupal_get_path('module', 'latuserprofile');
+  $reg['user_profile']['theme paths'] []= "$modulepath/theme";
+  //$reg['user_profile']['include files'] []= "./$modulepath/theme/theme.inc"; // <-- DOESN'T HELP WITH PREPROCESSING
+  //dpm($reg);
+}
+
+function latthemeacct_preprocess_page(&$vars) {
+  $arg0 = arg(0);
+  $arg2 = arg(2);
+  if ("$arg0/$arg2" == 'user/edit') {
+    $vars['body_classes'] = $vars['body_classes'].' user-account-settings';
+  }
+}
+
+function latuserprofile_preprocess_user_profile(&$vars) {
+
+  $account = $vars['account'];
+  //dpm($account);
+
+  //Set template file
+  $vars['template_files'] []= 'user-profile';
+  
+  //Set page title
+  $firstname = $account->profile_firstname;
+  $lastname = $account->profile_lastname;
+  if ($firstname) {
+    drupal_set_title("$firstname $lastname");
+  }
+  
+  //Variables
+  $vars['lat_profile_content'] = views_embed_view('lat_profile_content', 'default', $account->uid);
+}

@@ -1,0 +1,76 @@
+@charset "utf-8";
+/* CSS Document */
+
+/******************************************************************
+ * Layout table
+ ******************************************************************/
+#user-content-layout tbody {
+	border-style: none;
+}
+#user-content-layout td.col-left {
+  border-right: solid 1px #ccc;
+	padding: 0px 4px 8px 4px;
+}
+/******************************************************************
+ * Create Content Menu
+ ******************************************************************/
+h3.workspace-menu-title {
+	font-size: 1em;
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+#user-content-menu {
+	/*padding-top: 8px;*/
+	/*padding-left: 8px;*/
+}
+#user-content-menu ul {
+	/*padding-left: 8px;*/
+  padding-left: 0px;
+}
+#user-content-menu li {
+  margin-left: 0px;
+	list-style: none;
+	line-height: 200%;
+  white-space: nowrap;
+}
+/******************************************************************
+ * Workspace Item List (Views)
+ ******************************************************************/
+ 
+/* Empty version */
+.view-lat-user-workspace-content .view-empty {
+  margin-left: 8px;
+}
+
+/* Node version */
+.view-lat-user-workspace-content .node {
+  margin-left: 8px;
+}
+
+/* Table version */
+
+.view-lat-user-workspace-content .views-table {
+	width: 100%;
+}
+.view-lat-user-workspace-content .views-table tbody {
+	border-style-top: none;
+}
+.view-lat-user-workspace-content .views-table th {
+	padding: 2px 4px;
+	background-color: #eee;
+	border-bottom: none;
+}
+.view-lat-user-workspace-content .views-table tr {
+	border-bottom: solid 1px #ccc;
+	background-color: white;
+}
+.view-lat-user-workspace-content .views-table tr.not-published {
+	background-color: #FFF4F4;
+}
+.view-lat-user-workspace-content .views-table tr.views-row-last {
+	border-bottom: none;
+}
+.view-lat-user-workspace-content .views-table td {
+	padding: 4px 2px;
+	padding-top: 6px;
+}

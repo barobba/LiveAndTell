@@ -1,0 +1,36 @@
+
+NOTE:
+
+  SET "RELATIONSHIPS" SYSTEM WEIGHT TO 10
+  update {system} set weight = 10 where name = 'relationships' and type = 'module'
+
+relationships.admin.inc:
+
+  SETTINGS FORM:
+  overwrite_edit_form()                     <-- Groups: Must call hook manually for now...DONE
+  HOOK_overwrite_edit_form_RULE()           <-- Groups: Add form element toggle...DONE
+
+  SETTINGS FORM VALIDATION:
+  overwrite_edit_form_validate()            <-- NOT VALIDATING HOOKS (PERHAPS THIS IS UNECESSARY)
+  HOOK_overwrite_edit_form_validate_RULE()
+
+  SETTINGS FORM SUBMIT:
+  overwrite_edit_form_submit()              <-- NOT PROCESSING AUTOMATICALLY FOR HOOKS
+                                            <-- Groups: Store settings for the group...DONE
+
+relationships.admin.inc:
+
+  DEFINING PROPAGATION RULES:
+  HOOK_overwrite_rules()
+  
+  PREPARING THE NODE FOR THE ADD/EDIT FORM:
+  overwrite_nodeapi_prepare()               <-- Groups: Must call hook manually for now...DONE
+  HOOK_overwrite_nodeapi_prepare_RULE()     <-- Groups: Assign "group" values to node...DONE
+
+  MODIFYING NODE FORM TO HIDE MANAGED ELEMENTS:
+  overwrite_form_alter()                    <-- Groups: Must call hook manually for now...DONE
+  HOOK_overwrite_form_alter_RULE()          <-- Groups: Hide "groups" option...DONE
+
+  THE ACTUAL PROPAGATION ACTION:
+  overwrite_node_propagate()                <-- Groups: Must call hook manually for now...DONE
+  HOOK_overwrite_node_propagate_RULE()      <-- Groups: Propagate "groups" selections in parent...DONE

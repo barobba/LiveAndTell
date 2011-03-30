@@ -1,0 +1,489 @@
+<?php
+
+/**
+ * @file
+ *
+ * Creates and themes a landing page for '/lesson'
+ */
+ 
+/**
+ * Implementation of hook_init().
+ */
+function typepage_init() {
+
+  // The settings: 
+  //   association with each type given special page,
+  //   and path info for those types
+  $typepage_types = array(
+    'lesson_plan' => array(
+      'type' => 'lesson_plan', 
+      'path label' => 'Lesson plan',
+      'path name' => 'lesson-plan',
+      'new content view' => 'lessons_by_date',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'song' => array(
+      'type' => 'song', 
+      'path label' => 'Song',
+      'path name' => 'song',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'blog' => array(
+      'type' => 'blog', 
+      'path label' => 'Blog',
+      'path name' => 'blog',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'general_entry' => array(
+      'type' => 'general_entry', 
+      'path label' => 'General entry',
+      'path name' => 'general-entry',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'bmm' => array(
+      'type' => 'bmm', 
+      'path label' => 'Affixing',
+      'path name' => 'affixing',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'lnt_album' => array(
+      'type' => 'lnt_album', 
+      'path label' => 'Album',
+      'path name' => 'picture-book',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'mmd' => array(
+      'type' => 'mmd', 
+      'path label' => 'Dictionary',
+      'path name' => 'workspace',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+  );
+  //variable_set('typepage_types', $typepage_types);
+  
+  drupal_add_css(drupal_get_path('module', 'typepage') . '/theme/css/typepage.css');
+  //drupal_rebuild_theme_registry();
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function typepage_form_alter(&$form, $form_state, $form_id) {
+
+  // Verify that form is a node form
+  if (!array_key_exists('#node', $form)) {
+    return;
+  } // if
+  
+  // Get node
+  $node = $form['#node'];
+  
+  // Get all lat types
+  //$lat_types = variable_get('typepage_types', array());
+  $lat_types = array(
+    'lesson_plan' => array(
+      'type' => 'lesson_plan', 
+      'path label' => 'Lesson plan',
+      'path name' => 'lesson-plan',
+      'new content view' => 'lessons_by_date',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'song' => array(
+      'type' => 'song', 
+      'path label' => 'Song',
+      'path name' => 'song',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'blog' => array(
+      'type' => 'blog', 
+      'path label' => 'Blog',
+      'path name' => 'blog',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'general_entry' => array(
+      'type' => 'general_entry', 
+      'path label' => 'General entry',
+      'path name' => 'general-entry',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'bmm' => array(
+      'type' => 'bmm', 
+      'path label' => 'Affixing',
+      'path name' => 'affixing',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'lnt_album' => array(
+      'type' => 'lnt_album', 
+      'path label' => 'Album',
+      'path name' => 'picture-book',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'mmd' => array(
+      'type' => 'mmd', 
+      'path label' => 'Dictionary',
+      'path name' => 'workspace',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+  );
+
+  // Make sure current form is for a lat type
+  if (array_key_exists($node->type, $lat_types)) {
+    // Check for 'language/$lid' query string
+    foreach(arg() as $key => $value) {
+      if ($value == 'language') {
+        // Get language ID, its the next arg after 'language'
+        $lid = arg($key+1);
+        
+        // Get name of language based on its ID
+        if ($language = taxonomy_get_term($lid)) {
+          // Found a valid language
+          $languages[] = $language->name;
+        }
+      }
+    }
+
+    // Add these languages to this node's taxonomy   
+    if (count($languages)) {
+      $form['taxonomy']['tags'][1]['#default_value'] = implode(', ', $languages);      
+      $form['taxonomy']['tags'][1]['#access'] = FALSE;
+    }
+  }
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function typepage_nodeapi(&$node, $op, $a3, $a4) {
+
+  //
+  // Set breadcrumbs for nodes with special pages
+  //
+  
+  //$lat_types = variable_get('typepage_types', array());
+  $lat_types = array(
+    'lesson_plan' => array(
+      'type' => 'lesson_plan', 
+      'path label' => 'Lesson plan',
+      'path name' => 'lesson-plan',
+      'new content view' => 'lessons_by_date',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'song' => array(
+      'type' => 'song', 
+      'path label' => 'Song',
+      'path name' => 'song',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'blog' => array(
+      'type' => 'blog', 
+      'path label' => 'Blog',
+      'path name' => 'blog',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'general_entry' => array(
+      'type' => 'general_entry', 
+      'path label' => 'General entry',
+      'path name' => 'general-entry',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'bmm' => array(
+      'type' => 'bmm', 
+      'path label' => 'Affixing',
+      'path name' => 'affixing',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'lnt_album' => array(
+      'type' => 'lnt_album', 
+      'path label' => 'Album',
+      'path name' => 'picture-book',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'mmd' => array(
+      'type' => 'mmd', 
+      'path label' => 'Dictionary',
+      'path name' => 'workspace',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+  );
+
+  $node_types = node_get_types();
+  if (array_key_exists($node->type, $lat_types) && $op == 'view') {
+  
+    $lat_type = $lat_types[$node->type];
+
+    $teaser = $a3;
+    $page = $a4;
+    
+    if ($page) {
+      // Prepare to set breadcrumb
+      $type_name = $node_types[$node->type]->name;
+      $path_label = $lat_type['path label'];
+      $path_name = $lat_type['path name'];
+      $term = array_shift(taxonomy_node_get_terms_by_vocabulary($node, 1));
+      $term_lower = drupal_strtolower($term->name);
+      
+      // Construct breadcrumb: home/[type path name]/[language]
+      $breadcrumb[] = l(t('Home'), NULL);
+      $breadcrumb[] = l($path_label, $path_name);
+      $breadcrumb[] = l($term->name, "$path_name/$term_lower");
+      $breadcrumb[] = l($node->title, $_REQUEST['q']);
+      drupal_set_breadcrumb($breadcrumb);
+    }
+    
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function typepage_menu() {  
+
+  //$lat_types = variable_get('typepage_types', array());
+  $lat_types = array(
+    'lesson_plan' => array(
+      'type' => 'lesson_plan', 
+      'path label' => 'Lesson plan',
+      'path name' => 'lesson-plan',
+      'new content view' => 'lessons_by_date',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'song' => array(
+      'type' => 'song', 
+      'path label' => 'Song',
+      'path name' => 'song',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'blog' => array(
+      'type' => 'blog', 
+      'path label' => 'Blog',
+      'path name' => 'blog',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+   'general_entry' => array(
+      'type' => 'general_entry', 
+      'path label' => 'General entry',
+      'path name' => 'general-entry',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'bmm' => array(
+      'type' => 'bmm', 
+      'path label' => 'Affixing',
+      'path name' => 'affixing',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'lnt_album' => array(
+      'type' => 'lnt_album', 
+      'path label' => 'Album',
+      'path name' => 'picture-book',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+    'mmd' => array(
+      'type' => 'mmd', 
+      'path label' => 'Dictionary',
+      'path name' => 'workspace',
+      'new content view' => 'new_content_by_type_and_language',
+      'author view' => 'authors_by_type_lang',
+    ),
+  );
+
+  $node_types = node_get_types();
+  
+  $items = array();
+  foreach ($lat_types as $type => $lat_type) {
+  
+    $type_name = $node_types[$lat_type['type']]->name;
+    $path_label = $lat_type['path label'];
+    $path_name = $lat_type['path name'];
+    
+    $items = array_merge($items, array(
+      "$path_name" => array(
+        'title' => $type_name,
+        'description' => 'Language selection',
+        'page callback' => 'theme',
+        'page arguments' => array('typepage', $type),
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+      ),
+      "$path_name/%" => array(
+        'title' => $type_name,
+        'description' => $type_name,
+        'page callback' => 'theme',
+        'page arguments' => array('typepage_by_language', 1, $type),
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+      ),
+      "$path_name/%/author/%" => array(
+        'title' => $type_name,
+        'description' => 'Content for a specific language and author.',
+        'page callback' => 'theme',
+        'page arguments' => array('typepage_by_language_and_author', 1, 3, $type),
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+      ),
+      "$path_name/%/add" => array(
+        'title' => 'Create a new content',
+        'description' => 'Redirects authenticated users to form, and anonymous users to sign in',
+        'page callback' => '_typepage_create_redirect',
+        'page arguments' => array($type),
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+      ),
+    ));
+  }
+  return $items;
+}
+
+function _typepage_create_redirect($type) {
+  if (!user_is_anonymous()) {
+    drupal_goto("node/add/$type");
+  } else {
+    drupal_goto('user/login');
+  }
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function typepage_theme($existing, $type, $theme, $path) {
+  return array(
+    'typepage' => array(
+      'template' => 'typepage',
+      'arguments' => array('type' => NULL),
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+    'typepage_by_language' => array(
+      'template' => 'typepage-language',
+      'arguments' => array('language' => NULL, 'type' => NULL),
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+    'typepage_by_language_and_author' => array(
+      'template' => 'typepage-language-author',
+      'arguments' => array('language' => NULL, 'author_id' => NULL, 'type' => NULL),
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_views_query_alter().
+ */
+function typepage_views_query_alter(&$view, &$query) {
+
+  // Alter queries:
+  // * lesson_authors_by_language query
+  // * authors_by_type_lang
+  // * authors_by_lang
+  
+  if ( $view->name == 'lesson_authors_by_language'
+          || $view->name == 'authors_by_type_lang'
+          || $view->name == 'authors_by_lang' ) 
+  {
+          
+    // Change base field from nid to uid
+    $query->base_field = 'uid';
+    
+    // Tricky here.  Need to change $fields['nid'] to $fields['uid'],
+    // copy the $fields array, but when 'nid' is found, change to 'uid'.
+    $new_fields = array();
+    foreach($query->fields as $key => $value) {
+      if ($key == 'nid') {
+        $new_fields['uid'] = array('table' => 'node', 'field' => 'uid', 'alias' => 'uid');
+      }
+      else {
+        $new_fields[$key] = $value;
+      }
+    }
+    
+    // Overwrite $fields with new_fields
+    $query->fields = $new_fields;
+  }
+}
+
+/**
+ * Form builder for submitting a language.
+ */
+function _typepage_form(&$form_state) {
+
+  // Get vocabulary
+  $vocabulary = taxonomy_vocabulary_load(1);
+
+  // Add vocabulary to the form
+  $form['vocabulary'] = array('#type' => 'value', '#value' => $vocabulary);
+
+  // Create form for submitting a new language
+  $form['term'] = array(
+    '#type' => 'textfield',
+    '#title' => $vocabulary->name,
+    '#description' => t("If your language does not appear above, please enter it here and click 'Submit'."),
+    '#required' => FALSE,
+    '#autocomplete_path' => 'taxonomy/autocomplete/'. $vocabulary->vid,
+    '#maxlength' => 1024,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Submit',
+  );
+  
+  return $form;
+}
+
+/**
+ * Submit function for language_list form.
+ */
+function _typepage_form_submit($form, &$form_state) {
+  // Get form state values
+  $vid = $form_state['values']['vocabulary']->vid;
+  $typed_term = $form_state['values']['term'];
+
+  // See if term already exists
+  $possibilities = taxonomy_get_term_by_name($typed_term);
+  $typed_term_tid = NULL; // tid match, if any.
+  foreach ($possibilities as $possibility) {
+    if ($possibility->vid == $vid) {
+      $typed_term_tid = $possibility->tid;
+    }
+  }
+
+  // If it doesn't exist, create it
+  if (!$typed_term_tid) {
+    // Add a new taxonomy term
+    $edit = array('vid' => $vid, 'name' => $typed_term);
+    $status = taxonomy_save_term($edit);
+    $typed_term_tid = $edit['tid'];
+    $user = $_GLOBAL['user'];
+    $term = taxonomy_get_term($typed_term_tid);
+    watchdog('taxonomy', '@term created.', array('@term' => $term->name));
+  }
+
+  // Go to language page
+  $term = taxonomy_get_term($typed_term_tid);
+  $term_name = drupal_strtolower($term->name);
+  //drupal_goto("lessons/$term_name");  // NEEDS TO GO SOMEWHERE !!!!!!!!!!!!!!!!!!!!!!
+}

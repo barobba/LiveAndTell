@@ -1,0 +1,75 @@
+<?php
+
+function nodetoolbar_init() {
+  drupal_add_css(drupal_get_path('module', 'nodetoolbar') .'/theme/nodetoolbar.css');
+}
+
+/**
+ * Implements hook_theme.
+ * @param unknown_type $existing
+ * @param unknown_type $type
+ * @param unknown_type $theme
+ * @param unknown_type $path
+ */
+function nodetoolbar_theme($existing, $type, $theme, $path) {
+  return array(
+    'nodetoolbar' => array(
+      'arguments' => array('node' => array(), 'toolbar_name' => 'default'),
+      'template' => 'nodetoolbar',
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+    'nodetoolbar_separator' => array(
+      'arguments' => array(),
+      'template' => 'nodetoolbar_separator',
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+  );
+}
+
+/**
+* Implementation of hook_nodeapi().
+*/
+function nodetoolbar_nodeapi(&$node, $op, $teaser, $page) {
+  
+  // TODO "VALID TYPES" SHOULD BE DEFINED BY ADMIN INTERFACE
+  $valid_types = array(
+    'lnt_image'
+  );
+  
+  if (in_array($node->type, $valid_types) && $op == 'view') {
+    $toolbar = theme('nodetoolbar', $node);
+    $weight = content_extra_field_weight($node->type, 'toolbar');
+    $node->content['toolbar'] = array(
+      '#weight' => !empty($weight) ? $weight : 999,
+      '#value' => $toolbar,
+    );
+  } 
+  else {
+    // Do nothing, since the toolbar is not supported for this node type
+  }
+}
+
+/**
+ * Implementation of hook_content_extra_fields().
+ * 
+ * Add "nodetoolbar" to field sorting in CCK admin page
+ * 
+ * @param $type_name
+ */
+function nodetoolbar_content_extra_fields($type_name) {
+  $valid_types = array('lnt_image'); // CONSTANT TYPE; SHOULD BE DEFINED BY ADMIN !!!!!!!!!!!!!!!!!!!!
+  $extra_fields = array();
+  if (in_array($type_name, $valid_types)) {
+    $extra_fields['toolbar'] = array(
+      'label' => t('Toolbar'),
+      'description' => t('Toolbar for this node.'),
+      'weight' => 999,
+    ); 
+  }
+  else {
+    // Do nothing, since the toolbar is not supported for this node type
+  }
+  return $extra_fields;
+}

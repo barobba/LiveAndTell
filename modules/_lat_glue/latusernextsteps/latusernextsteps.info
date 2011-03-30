@@ -1,0 +1,4 @@
+name = LAT User Next Steps
+description = Offer suggestions of what to do on the LiveAndTell website.
+package = .LiveAndTell
+core = 6.x

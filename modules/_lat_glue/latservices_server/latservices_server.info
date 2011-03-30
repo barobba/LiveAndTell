@@ -1,0 +1,5 @@
+package = Services - servers
+name = LAT Services Server
+description = Custom server for handling LAT-related methods (via the Services module).
+core = 6.x
+dependencies[] = services

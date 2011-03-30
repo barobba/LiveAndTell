@@ -1,0 +1,3 @@
+name = Node Toolbar
+description = This provides a toolbar, which can be used by nodes.
+core = 6.x

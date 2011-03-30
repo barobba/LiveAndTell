@@ -1,0 +1,67 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ *
+ * Declares the database schema for relationships module.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function relationships_schema() {
+  $schema['relationships'] = array(
+    'description' => 'Stores relationship information.',
+    'fields' => array(
+      'parent_type' => array(
+        'type' => 'varchar',
+        'length' => 166, // <-- SO THE PARENT_CHILD KEY WILL FIT 1000 BYTES
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The node type of the parent.',
+      ),
+      'child_type' => array(
+        'type' => 'varchar',
+        'length' => 166, // <-- SO THE PARENT_CHILD KEY WILL FIT 1000 BYTES
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The node type of the child.',
+      ),
+      'field_name' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The name of the node reference field to manage.',
+      ),
+      'settings' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '0',
+        'description' => 'Settings for this relationship.',
+      ),
+    ),
+    'unique keys' => array(
+      'parent_child' => array('parent_type', 'child_type') // <-- KEY = 3 * (166 + 166)
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function relationships_install() {
+  drupal_install_schema('relationships');
+  db_query("UPDATE {system} SET weight = 10 WHERE name = 'relationships'");
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function relationships_uninstall() {
+  drupal_uninstall_schema('relationships');
+}

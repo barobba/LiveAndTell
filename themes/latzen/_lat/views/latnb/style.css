@@ -1,0 +1,34 @@
+@CHARSET "ISO-8859-1";
+
+div.view-image-thumbnails {
+}
+
+div.view-image-thumbnails table.views-view-grid {
+  margin-top: 0px;
+  width: 100%;
+}
+
+div.view-image-thumbnails .views-view-grid td {
+	height: 189px;
+}
+
+div.view-image-thumbnails .views-view-grid td div {
+  text-align: center;
+}
+
+div.view-image-thumbnails table.views-view-grid .views-field-nid {
+  display: none;
+}
+
+div.view-image-thumbnails table.views-view-grid .views-field-field-image-fid {
+	height: 153px;
+}
+
+div.view-image-thumbnails table.views-view-grid .views-field-field-image-fid .field-content {
+	line-height: 153px;
+}
+
+div.view-image-thumbnails table.views-view-grid .views-field-field-image-fid .field-content img {
+  line-height: 153px;
+  vertical-align: bottom;
+}

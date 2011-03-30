@@ -1,0 +1,4 @@
+name = Arg tokens
+description = Create tokens out of the arguments
+dependencies[] = token
+core = 6.x

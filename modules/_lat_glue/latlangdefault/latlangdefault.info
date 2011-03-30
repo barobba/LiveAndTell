@@ -1,0 +1,4 @@
+name = LAT Language (Term) Default
+description = Sets the default "language term" on forms when ther user preference is set for that term.
+package = .LiveAndTell
+core = 6.x

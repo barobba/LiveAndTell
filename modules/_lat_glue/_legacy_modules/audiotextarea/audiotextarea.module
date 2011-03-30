@@ -1,0 +1,203 @@
+<?php
+// $Id$
+
+/**
+* @file
+* An example to define a simple field, widget, and formatter.
+* A module could define only a field, only a widget, only a
+* formatter, or any combination. Widgets and formatters must
+* declare what kind of field they work with, which can be any
+* existing field as well as any new field the module creates.
+*/
+
+//==========================================//
+// DEFINING A FIELD
+//==========================================//
+
+/**
+* Implementation of hook_field_info().
+*/
+function audiotextarea_field_info() {
+  return array(
+    'audiotextarea' => array(
+      'label' => t('Audio Textarea'),
+      'description' => t('Store audio and text data in the database.'),
+      'content_icon' => 'icon_content_text.png',
+    ),
+  );
+}
+
+/**
+* Implementation of hook_field_settings().
+*/
+function audiotextarea_field_settings($op, $field) {
+  switch ($op) {
+    // Tell CCK how to store the data in the database
+    case 'database columns':
+      $columns['audiotextarea_text'] = array('type' => 'text', 'not null' => FALSE, 'sortable' => TRUE, 'views' => TRUE);
+      $columns['audiotextarea_audio'] = array('type' => 'varchar', 'length' => 255, 'not null' => FALSE, 'sortable' => TRUE, 'views' => TRUE);
+      
+      return $columns;
+  }
+}
+
+/**
+* Implementation of hook_content_is_empty().
+*
+* CCK has no way to know if something like a zero is
+* an empty value or a valid value, so return
+* TRUE or FALSE to a populated field $item array.
+* CCK uses this to remove empty multi-value elements
+* from forms.
+*/
+function audiotextarea_content_is_empty($item, $field) {
+  if (empty($item['audiotextarea_text']) && empty($item['audiotextarea_audio'])) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+//==========================================//
+// DEFINING A FORMATTER
+//==========================================//
+
+/**
+ * Implementation of hook_theme().
+ */
+function audiotextarea_theme() {
+  return array(
+    // Themes for formatter.
+    'audiotextarea_formatter_default' => array(
+      'arguments' => array('element' => NULL),
+    ),
+  );
+}
+
+/**
+* Implementation of hook_field_formatter_info().
+*
+* All fields should have a 'default' formatter.
+* Any number of other formatters can be defined as well.
+* It's nice for there always to be a 'plain' option
+* for the raw value, but that is not required.
+*
+*/
+function audiotextarea_field_formatter_info() {
+  return array(
+    'default' => array(
+      'label' => t('Default'),
+      'field types' => array('audiotextarea'),
+      'multiple values' => CONTENT_HANDLE_CORE,
+    ),
+  );
+}
+
+//==========================================//
+// DEFINING A WIDGET
+//==========================================//
+
+/**
+* Implementation of hook_widget_info().
+*
+* Here we indicate that the content module will handle
+* the default value and multiple values for these widgets.
+*
+* Callbacks can be omitted if default handing is used.
+* They're included here just so this module can be used
+* as an example for custom modules that might do things
+* differently.
+*/
+function audiotextarea_widget_info() {
+  return array(
+    'audiotextarea_widget' => array(
+      'label' => t('Audio Textarea Widget'),
+      'field types' => array('audiotextarea'),
+      'multiple values' => CONTENT_HANDLE_CORE,
+      'callbacks' => array(
+        'default value' => CONTENT_CALLBACK_DEFAULT,
+      ),
+    ),
+  );
+}
+
+/**
+* Implementation of hook_widget_settings().
+*/
+function audiotextarea_widget_settings($op, $widget) {
+  //This is where we handle the widget settings
+  //TODO: display/validate settings for the widget
+}
+
+/**
+* Implementation of hook_widget().
+*
+* Attach a single form element to the form.
+*
+* CCK core fields only add a stub element and builds
+* the complete item in #process so reusable elements
+* created by hook_elements can be plugged into any
+* module that provides valid $field information.
+*
+* Custom widgets that don't care about using hook_elements
+* can be built out completely at this time.
+*
+* If there are multiple values for this field and CCK is
+* handling multiple values, the content module will call
+* this function as many times as needed.
+*
+* @param $form
+*   the entire form array,
+*   $form['#node'] holds node information
+* @param $form_state
+*   the form_state,
+*   $form_state['values'][$field['field_name']]
+*   holds the field's form values.
+* @param $field
+*   the field array
+* @param $items
+*   array of default values for this field
+* @param $delta
+*   the order of this item in the array of
+*   subelements (0, 1, 2, etc)
+*
+* @return
+*   the form item for a single element for this field
+*/
+function audiotextarea_widget(&$form, &$form_state, $field, $items, $delta = 0) {
+  $element['audiotextarea_text'] = array(
+    '#type' => 'textarea',    
+    '#title' => $field['widget']['label'],
+    '#default_value' => isset($items[$delta]['audiotextarea_text']) ? $items[$delta]['audiotextarea_text'] : NULL, 
+    '#attributes' => array('class' => 'audiotextarea-text'),
+  );
+
+  $element['audiotextarea_audio'] = array(
+    '#type' => 'audio',
+    '#description' => $field['widget']['description'],
+    '#default_value' => isset($items[$delta]['audiotextarea_audio']) ? $items[$delta]['audiotextarea_audio'] : NULL, 
+    '#attributes' => array('class' => 'audiotextarea-audio'),
+  );
+
+  // Used so that hook_field('validate') knows where to
+  // flag an error in deeply nested forms.
+  if (empty($form['#parents'])) {
+    $form['#parents'] = array();
+  }
+  $element['_error_element'] = array(
+    '#type' => 'value',
+    '#value' => implode('][', array_merge($form['#parents'], array('audiotextarea'))),
+  );
+
+  return $element;
+}
+
+/**
+ * Theme function for audiotextarea_formatter_default
+ */
+function theme_audiotextarea_formatter_default($element) {  
+  $audio['#item']['value'] = $element['#item']['audiotextarea_audio'];
+  $text = $element['#item']['audiotextarea_text'];
+
+  return theme('audio_formatter_default', $audio) . ' ' . $text;
+
+}

@@ -1,0 +1,141 @@
+
+/**
+ * REMOVE TABLE BORDER ON TOP
+ */
+tbody {
+  border-top: none;
+}
+
+/**
+ * SETUP PAGE DIMENSIONS
+ */
+html, body {
+  /*height: 100%;*/
+  /*margin: 20px 0px 0px 0px;*/
+  margin: 0px;
+} 
+#my-page {
+  margin: 0px auto;
+  /*
+  min-height: 100%;
+  */
+  width: 760px;
+}
+
+/**
+ * BACKGROUND COLORING
+ */
+body {
+  background-image: url(http://liveandtell.com/sites/liveandtell.com/modules/_lat_special_sections/plktbarb/background-buffalohide4.jpg);
+}
+#latmodlakotabarb {
+  background-color: white;
+}
+
+/**
+ * BREASTPLATE DECORATION
+ */
+#breastplate-left,
+#breastplate-right
+{
+  width: 84px;
+  background-image: url(http://liveandtell.com/sites/liveandtell.com/modules/_lat_special_sections/plktbarb/breast-plate.png);
+}
+
+/**
+ * HEADING
+ */
+#heading {
+  padding: 20px;
+  height: 84px;
+}
+
+#heading img {
+  float: left;
+  margin-right: 20px;
+}
+ 
+#heading h1 {
+  font-family: sans-serif;
+  margin: 0px;
+}
+
+#heading #logo-url {
+  font-family: sans-serif;
+  font-size: 80%;
+}
+
+/**
+ * BOOK MESSAGE
+ */
+#book-message {
+  padding: 0px 12px 16px 12px;
+}
+ 
+/**
+ * MAIN PICTURE
+ */
+
+#latmodlakotabarb #main-picture {
+  background-color: white;
+  height: 440px;
+  overflow: scroll;
+}
+
+/**
+ * OPTION BAR ON THE LEFT
+ */
+
+#latmodlakotabarb td.left, td.right {
+  width: 200px;
+  vertical-align: top;
+}
+
+#latmodlakotabarb #print-option {
+  padding-top: 40px;
+  text-align: center;
+  font-weight: bold;
+}
+
+#latmodlakotabarb #pronunciation-option {
+  padding-top: 100px;
+  text-align: center;
+}
+
+/**
+ * THUMBNAILS
+ */
+
+#latmodlakotabarb #thumbnails {
+  background-color: white;
+  height: 420px;
+  width: 580px;
+  overflow: scroll;
+}
+
+#latmodlakotabarb .view-plkt-barbs-coloring-book table {
+  width: 100%;
+}
+
+#latmodlakotabarb .view-plkt-barbs-coloring-book table {
+  text-align: center;
+}
+
+#latmodlakotabarb .view-plkt-barbs-coloring-book .views-field-field-lnt-image-fid img {
+  border: solid 2px black;
+}
+
+#latmodlakotabarb .view-plkt-barbs-coloring-book .views-field-title {
+  padding-bottom: 32px;
+}
+
+
+/**
+ * NOTICES
+ */
+#notice {
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 80%;
+  padding: 8px;
+}

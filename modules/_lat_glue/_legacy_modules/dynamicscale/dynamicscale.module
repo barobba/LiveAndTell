@@ -1,0 +1,130 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ *
+ * Module file for dynamicscale.  Allows a user to
+ * dynamically create an 'imagecache_scale' imagecache preset.
+ *
+ * The imagecache module defines two ways to use presets:
+ *
+ * 1. By query string, e.g. 'files/imagechache/PRESETNAME/path'
+ * 2. By theme, e.g. theme('imagecache', $presetname, $path, $alt, $title, $attributes)
+ *
+ *
+ * The presets, however, must be created beforehand.  This module
+ * copies the 'query string' and 'theme' methods for using presets,
+ * but actually _creates_ the preset at the same time (if it
+ * doesn't already exist):
+ *
+ * 1. By query string, e.g. 'files/dynamicscale/WIDTH/HEIGHT/path'
+ * 2. By theme, e.g. theme('dynamicscale', $width, $height, $path, $alt, $title, $attributes)
+ *
+ * We cannot just add an $action variable for different types of presets,
+ * because different types of presets require a different number of settings.
+ * Therefore, this module currently only creates 'imagecache_scale' presets.
+ *
+ */
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function dynamicscale_menu() {
+  $items = array();
+  
+  $items[file_directory_path() . '/dynamicscale'] = array(
+    'page callback' => 'dynamicscale_cache',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK
+  );
+  
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function dynamicscale_theme() {
+  $themes = array();
+  
+  $themes['dynamicscale'] = array(
+    'arguments' => array(
+      'width' => NULL,
+      'height' => NULL,
+      'path' => NULL,
+      'alt' => NULL,
+      'title' => NULL,
+      'attributes' => array(),
+    ),
+  );
+  
+  return $themes;
+}
+
+
+/**
+ * Theme function for dynamicscale.
+ */
+function theme_dynamicscale($width, $height, $path, $alt = '', $title = '', $attributes = NULL) {
+  // Create preset
+  $presetname = dynamicscale_create_preset($width, $height, $path);
+  
+  // Return the imagecache theme
+  return theme('imagecache', $presetname, $path, $alt, $title, $attributes);
+}
+
+/**
+ * Menu callback for 'files/dynamicscale'
+ */
+function dynamicscale_cache() {
+  // Get arguments
+  $args       = func_get_args();
+  $width      = check_plain(array_shift($args));
+  $height     = check_plain(array_shift($args));  
+  $path       = implode('/', $args);
+
+  // Create preset
+  $presetname = dynamicscale_create_preset($width, $height, $path);
+  
+  // Redirect to imagecache
+  drupal_goto(file_directory_path()."/imagecache/$presetname/$path");
+}
+
+
+/**
+ * Create a new imagecache preset
+ */
+function dynamicscale_create_preset($width, $height, $path) {  
+  // Construct preset name
+  $presetname =  'dynamicscale_' . $width . '_' . $height;
+  
+  // Create if preset doesn't exist
+  if (!$preset = imagecache_preset_by_name($presetname)) {
+    // Save a new, empty preset (this gives us our new preset ID)
+    $preset = imagecache_preset_save(array('presetname' => $presetname));
+ 
+    // Create the action data: imagecache_scale, width, height, allow upscaling
+    $action = array(
+      'action' => 'imagecache_scale',
+      'presetid' => $preset['presetid'],
+      'data' => array('width' => $width, 'height' => $height, 'upscale' => 1),    
+    );
+  
+    // Save the action
+    imagecache_action_save($action);
+  }
+  
+  // Imagecache will create the directory for this preset automatically.
+  // However, in doing so, one or more drupal_set_messages are fired by
+  // file_check_directory.  We want a silent creation, so we attempt to
+  // create the directory here first so that we can clear those messages.
+  //$dir = dirname(file_create_path()."/imagecache/$presetname/$path");
+  //file_check_directory($dir, FILE_CREATE_DIRECTORY);
+  
+  // Clear drupal messages
+  //dpm(drupal_get_messages());
+  
+  return $presetname;
+}

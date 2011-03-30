@@ -1,0 +1,6 @@
+; $Id$
+name = Relationships
+description = Define relationships between node types where "parent" content can be over-written to the "child content.
+core = 6.x
+dependencies []= content
+dependencies []= nodereference

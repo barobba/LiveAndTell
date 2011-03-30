@@ -1,0 +1,5 @@
+; $Id$
+name = Live-and-Tell Albums
+description = Container for Live-and-Tell pictures
+package = .LiveAndTell
+core = 6.x

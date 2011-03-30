@@ -1,0 +1,10 @@
+<?php
+// $Id$
+
+/**
+* @file
+*/
+
+function languagebutton_init() {
+  drupal_add_css(drupal_get_path('module', 'languagebutton') . '/languagebutton.css');
+}

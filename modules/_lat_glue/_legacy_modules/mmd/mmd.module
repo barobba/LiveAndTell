@@ -1,0 +1,95 @@
+<?php
+
+// $Id$
+
+/**
+ * @file
+ *
+ * Adds more functionality to the mmd content type.
+ */
+ 
+/**
+ * Implementation of hook_init().
+ */
+function mmd_init() {
+  drupal_add_css(drupal_get_path('module', 'mmd').'/mmd.css');
+}
+
+/**
+ * Implementation of hook_preprocess_page().
+ */
+function mmd_preprocess_page(&$var) {
+  if (array_key_exists('node', $var) && $var['node']->type == 'mmd') { 
+    // Remove tabs
+    unset($var['tabs']);
+  }
+}
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ */
+function mmd_form_node_delete_confirm_alter(&$form, $form_state) {
+  // Get node  
+  $node = $form['#parameters'][2];
+
+  // Check if it's a multimedia dictionary content type  
+  if ($node->type == 'mmd') {
+    // Redirect user back to their profile
+    $form['#redirect'] = 'user';
+  }
+}
+
+/**
+ * Implementation of hook_preprocess_node().
+ */
+function mmd_preprocess_node(&$var) {
+
+  if ($var['node']->type == 'mmd') { 
+    $node = $var['node'];
+    $nid = $node->nid;
+    $user = $var['user'];
+    
+    //Links
+    if (node_access('update', $node)) {
+      // Set class for toolbar buttons
+      $options = array('attributes' => array('class' => 'link-button'));
+
+      // Toolbar
+      $toolbar[] = l(t('Add Entry'), "node/add/mmde/$nid?destination=/node/$nid", $options);
+      $toolbar[] = l(t('Settings'), "node/$nid/edit", $options);
+      $toolbar[] = l(t($node->status == 1 ? 'Make Private' : 'Publish'), "node/$nid/edit/toggle-publish", $options);
+      $var['mmd_toolbar'] = '<div id="mmd-toolbar" class="toolbar">'.implode(' ', $toolbar).'</div>';
+    }
+        
+    $var['mmd_entries'] = views_embed_view('multimedia_dictionary_owner_view', 'default', $nid);    
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function mmd_menu() {
+  
+  $items['node/%node/edit/toggle-publish'] = array(
+    'title' => 'Toggles node publish status',
+    'page callback' => '_mmd_toggle_publish',
+    'page arguments' => array(1),
+    'access callback' => 'node_access',
+    'access arguments' => array('update', 1),
+    'type' => MENU_CALLBACK,
+  );
+  
+  return $items;
+}
+
+/**
+ * Menu callback.  Toggles the published status of a node.
+ */
+function _mmd_toggle_publish($node) {
+  // Toggle publish status
+  $node->status = 1 - $node->status;
+  node_save($node);
+  
+  // Redirect back to node
+  drupal_goto('node/'.$node->nid);  
+}

@@ -1,0 +1,112 @@
+<?php
+
+function latmodlakotabarb_menu() {
+  $items = array(
+    'special/lakota/coloring-book' => array(
+      'title' => 'Lakota Children\'s Dictionary and Coloring Book',
+      'page callback' => 'theme',
+      'page arguments' => array('latmodlakotabarb'),
+      'access callback' => true,
+      'type' => MENU_CALLBACK,
+    ),
+    'special/lakota/coloring-book/print' => array(
+      'title' => 'Lakota Children\'s Dictionary and Coloring Book',
+      'page callback' => 'theme',
+      'page arguments' => array('latmodlakotabarb_print'),
+      'access callback' => true,
+      'type' => MENU_CALLBACK,
+    ),
+    'special/lakota/coloring-book/guide' => array(
+      'title' => 'Lakota Children\'s Dictionary and Coloring Book',
+      'page callback' => 'theme',
+      'page arguments' => array('latmodlakotabarb_guide'),
+      'access callback' => true,
+      'type' => MENU_CALLBACK,
+    ),
+  );
+  return $items;
+}
+
+function latmodlakotabarb_theme() {
+  $theme = array(
+    'latmodlakotabarb' => array(
+      'arguments' => array(),
+      'template' => 'latmodlakotabarb',
+    ),
+    'latmodlakotabarb_print' => array(
+      'arguments' => array(),
+      'template' => 'latmodlakotabarb-print',
+    ),
+    'latmodlakotabarb_guide' => array(
+      'arguments' => array(),
+      'template' => 'latmodlakotabarb-guide',
+    ),
+  );
+  return $theme;
+}
+
+function latmodlakotabarb_theme_registry_alter(&$theme_registry) {
+  $theme_registry['page']['theme paths'][] = drupal_get_path('module','latmodlakotabarb');
+  //$theme_registry['views_view']['theme paths'][] = drupal_get_path('module','latmodlakotabarb');
+}
+
+function latmodlakotabarb_preprocess_page(&$vars) {
+
+  $arg0 = arg(0);
+  $arg1 = arg(1);
+  $arg2 = arg(2);
+  $check_path = "$arg0/$arg1/$arg2";
+  
+  if ($check_path == 'special/lakota/coloring-book') {
+    $css = $vars['css'];
+    unset($css['all']['theme']);
+    $css['all']['theme'] = array();
+    $vars['styles'] = drupal_get_css($css);
+  }
+  
+}
+
+function latmodlakotabarb_preprocess_latmodlakotabarb_print(&$vars) {
+
+  $path = drupal_get_path('module', 'latmodlakotabarb');
+  drupal_add_css("$path/latmodlakotabarb-print.css");
+  $filepath = file_directory_path();
+  $preset = 'full_printable_pagesize';
+  //$preset = 'full_printable_page';
+  
+  $nid = $_GET['id'];
+  $node = node_load($nid);
+  
+  $cck_file_path = 'lnt_image';
+  $coloringpage = $node->field_lnt_image[0]['filename'];
+  $imageuri = "/$filepath/imagecache/$preset/$cck_file_path/$coloringpage";
+  $vars['printout'] = "<img src='$imageuri' />";
+  
+  $printer_image_path = "http://liveandtell.com/$path/printer.png";
+  $vars['printer_icon'] = "<img src='$printer_image_path' />";
+  
+  $left_arrow_image_path = "http://liveandtell.com$pathleft_arrow__height_36.png";
+  $vars['left_arrow_icon'] = "<img src='$left_arrow_image_path' />";
+  
+  $vars['logo'] = theme_get_setting('logo');
+  $vars['nid'] = $nid;
+}
+
+function latmodlakotabarb_preprocess_latmodlakotabarb_guide(&$vars) {
+  $path = drupal_get_path('module', 'latmodlakotabarb');
+  drupal_add_css("$path/latmodlakotabarb-guide.css");
+  $left_arrow_image_path = "http://liveandtell.com/$path/left_arrow__height_36.png";
+  $vars['left_arrow_icon'] = "<img src='$left_arrow_image_path' />";
+  $vars['logo'] = theme_get_setting('logo');
+  $nid = $_GET['id'];
+  $node = node_load($nid);
+  $vars['nid'] = $nid;
+}
+
+function latmodlakotabarb_preprocess_latmodlakotabarb(&$vars) {
+  $path = drupal_get_path('module', 'latmodlakotabarb');
+  drupal_add_css("$path/screen-style.css");
+  drupal_add_css("$path/latmodlakotabarb.css");
+  $vars['thumbnails'] = views_embed_view('plkt_barbs_coloring_book');
+  $vars['logo'] = theme_get_setting('logo');
+}

@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * Implementation of hook_init().
+ * 
+ * Add CSS files.
+ */
+function latlangnav_init() {
+  $path = drupal_get_path('module', 'latlangnav');
+  drupal_add_css("$path/theme/css/latlangnav.css");
+  drupal_add_css("$path/theme/css/latlangnav-lat-langnav-language.css");
+  drupal_add_css("$path/theme/css/latlangnav-lat-langnav-languages-overview.css");
+}
+
+/**
+ * Implementation of hook_menu().
+ * 
+ * Page that lists the LiveAndTell languages
+ */
+function latlangnav_menu() {
+  $items = array(
+  
+    // Admin settings page for identifying the vocabulary
+    // that is used for identifying the target language.
+    'admin/settings/latlangnav' => array(
+      'title' => 'LiveAndTell Language Navigation',
+      'description' => 'Assign the taxonomy',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('latlangnav_settings'),
+      'access callback' => 'user_access',
+      'access arguments' => array('access content'),
+      'file' => 'latlangnav.admin.inc',
+    ),
+  
+    // The list of languages 
+    'language' => array(
+      'title' => 'Languages',
+      'page callback' => 'theme',
+      'page arguments' => array('lat_language_generic_menu'),
+      'access arguments' => array('access content'),
+    ),
+    
+    // The content per language
+    'language/%' => array(
+      'title' => 'Lanuages',
+      'page callback' => 'theme',
+      'page arguments' => array('lat_language_content_summary', 1),
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+    ),
+    
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function latlangnav_theme($existing, $type, $theme, $path) {
+  $theme = array(
+    'lat_language_list' => array(
+      'arguments' => array('format' => 'item_list'),
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+    'lat_language_nodetype_list_by_language' => array(
+      'arguments' => array('language_term' => null, 'format' => 'item_list'),
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+    'lat_language_generic_menu' => array(
+      'arguments' => array(),
+      'template' => 'lat-language-generic-menu',
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+    'lat_language_content_summary' => array(
+      'arguments' => array('language' => NULL),
+      'template' => 'lat-language-content-summary',
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+  );
+  return $theme;
+}

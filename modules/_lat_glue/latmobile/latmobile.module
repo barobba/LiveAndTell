@@ -1,0 +1,200 @@
+<?php
+
+/**
+ * Implementation of 'hook_perm'
+ */
+function latmobile_perm() {
+  return array('latmobile upload mobile content');
+}
+
+/**
+ * Implementation of 'hook_menu'
+ */
+function latmobile_menu() {
+  return array(
+    // Store valid domains in a single textbox
+    'admin/settings/latmobile' => array(
+      'title' => 'LiveAndTell Mobile Settings',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('latmobile_configure_form'),
+      'access arguments' => array('administer site configuration'),
+      'file' => 'latmobile.admin.inc',
+    ),
+    // Store user mobile number for uploads
+    'user/%user/edit/mobile' => array(
+      'title' => 'Mobile uploads',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('latmobile_user_form', 1),
+      'access callback' => 'user_edit_access',
+      'access arguments' => array(1),
+      'type' => MENU_LOCAL_TASK,
+      'tab_parent' => 'user/%/edit',
+      'file' => 'latmobile.pages.inc',    
+    ),
+    // Verify MMS email is registered
+    'latmobile-sender-verify' => array(
+      'title' => 'LAT Mobile - Sender check',
+      'page callback' => '_latmobile_sender_verify_page',
+      'access callback' => true, // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      'file' => 'latmobile.admin.inc',
+    ),
+    // Receive instructions for uploaded pictures
+    'latmobile-submit' => array(
+      'title' => 'LAT Mobile - Upload handler',
+      'page callback' => '_latmobile_submit_page',
+      'access callback' => true, // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      'file' => 'latmobile.admin.inc',
+    ),
+  );
+}
+
+/**
+ * Implementation of 'hook_user'
+ * 
+ * Adds mobile number to account data.
+ * 
+ * @param $uid
+ * @param $alternative
+ */
+function latmobile_user($op, &$edit, &$account, $category = NULL) {
+  switch($op) {
+    case 'load':
+      $mobile = latmobile_mobile_number_get($account->uid);
+      if ($mobile) {
+        $account->latmobile_mobile_number = $mobile;
+      } 
+      else {
+        // Mobile number missing, so leave account alone.
+      }
+      break;
+  }
+}
+
+function latmobile_account_load($email) {
+  // First, check user's email
+  $user = array('mail' => $email);
+  $user = user_load($user);
+  if ($user != FALSE) {
+    return $user;
+  } else {
+    // Then, check user's mobile number
+    $sender_parts = explode('@', $email);
+    $mobile = $sender_parts[0];
+    $carrier = $sender_parts[1];
+    if (latmobile_mobile_number_check($mobile) && latmobile_carrier_domain_check($carrier)) {
+      $user = latmobile_account_load_mobile($mobile);
+      if ($user != FALSE) {
+        return $user;
+      } else {
+        // Account not found
+        return FALSE;
+      }
+    }
+    else {
+      // Account doesn't validate "mobile" and "carrier" checks.
+      return FALSE;
+    }
+  }
+}
+
+function latmobile_account_load_mobile($mobile) {
+  $query = <<<EOS
+    select
+      m.uid
+    from 
+      {latmobile_registration} m
+    where 
+      m.mobile_number_filtered = '%s'
+EOS;
+  $rset = db_query_range($query, $mobile, 0, 1);
+  $result = db_result($rset);
+  if ($result != false) {
+    return user_load($result);
+  } else {
+    return false;
+  }
+}
+
+/**
+ * Carrier domain check
+ * @param $domain
+ */
+function latmobile_carrier_domain_check($domain) {
+  $carrier_domains = variable_get('latmobile_carrier_domains', array());
+  $carrier_domains = trim($carrier_domains);
+  $carrier_domains = preg_split("/\\r\\n|\\n|\\r/", $carrier_domains);
+  return in_array($domain, $carrier_domains);
+}
+
+function latmobile_mobile_number_check($mobile) {
+  $query = <<<EOS
+    select
+      m.uid
+    from 
+      {latmobile_registration} m
+    where 
+      m.mobile_number_filtered = '%s'
+EOS;
+  $rset = db_query_range($query, $mobile, 0, 1);
+  $result = db_result($rset); 
+  if ($result != false) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function latmobile_mobile_number_check_format($mobile) {
+  $mobile = latmobile_mobile_number_filter($mobile);
+  return preg_match('/[0-9]{10}/', $mobile) == 1;
+}
+
+/**
+ * LAT Mobile - Get mobile number
+ * 
+ * @param $uid
+ */
+function latmobile_mobile_number_get($uid) {
+  $query = <<<EOS
+    select
+      m.mobile_number
+    from 
+      {latmobile_registration} m
+    where 
+      m.uid = %d
+EOS;
+  $rset = db_query_range($query, $uid, 0, 1);
+  return db_result($rset);
+}
+
+function latmobile_mobile_number_filter($mobile) {
+  return preg_replace('/[- \\(\\)]/', '', $mobile);
+}
+
+function latmobile_mobile_number_insert($uid, $mobile) {
+  $mobile_filtered = latmobile_mobile_number_filter($mobile); 
+  // Insert new mobile number
+  $sql_insert = <<<EOS
+    insert into
+      {latmobile_registration} 
+        (uid, mobile_number, mobile_number_filtered)
+    values
+      (%d, '%s', '%s')
+EOS;
+  db_query($sql_insert, $uid, $mobile, $mobile_filtered);
+}
+
+function latmobile_mobile_number_update($uid, $mobile) {
+  $mobile_filtered = latmobile_mobile_number_filter($mobile);
+  // Update mobile number
+  $sql_update = <<<EOS
+    update 
+      {latmobile_registration} m
+    set
+      m.mobile_number = '%s'
+      and m.mobile_number_filtered = '%s'
+    where
+      m.uid = %d
+EOS;
+  db_query($sql_update, $mobile, $mobile_filtered, $uid);
+}

@@ -1,0 +1,36 @@
+<?php
+/**
+ * If the user language preference is set, then adjust
+ * forms (with language fields) to reflect this information.
+ */
+
+/**
+ * HOOK_FORM_ALTER
+ * Set the form's taxonomy term default, based on user preferences
+ */
+function latlangdefault_form_alter(&$form, $form_state) {
+
+  $uid = $GLOBALS['user']->uid;
+  $lat_term = variable_get("uid_lat_term", NULL);
+  
+  // NOT OPTIMAL, LOADS VARIABLE FOR ALL USERS WITH EVERY PAGE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // ALSO, MIGHT WANT TO GENERALIZE TO ANY TAXONOMY TERM PREFERENCE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  
+  if ($lat_term) {
+  
+    // Check if this form has the Language vocabulary
+    if (isset($form['taxonomy']['tags'][$lat_term->vid])) {
+
+      // Set the default value    
+      if (!$form['taxonomy']['tags'][$lat_term->vid]['#default_value']) {
+        $form['taxonomy']['tags'][$lat_term->vid]['#default_value'] = $lat_term->name;
+      }
+      
+      // Hide this field
+      $form['taxonomy']['tags'][$lat_term->vid]['#access'] = FALSE;
+      
+    }
+    
+  }
+  
+}

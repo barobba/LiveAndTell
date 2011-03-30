@@ -1,0 +1,4 @@
+name = Sitting Bull School Albums
+description = A special section for Sitting Bull School
+package = .LiveAndTell
+core = 6.x

@@ -1,0 +1,146 @@
+
+body.page-language h1#page-title {
+  margin: 0px;
+}
+
+table.lesson-content .language-page-link {
+  margin-bottom: 32px;
+}
+
+/*******************************************************************
+ * LESSON PLAN - CREATE LINK
+ *******************************************************************/
+table.lesson-content .create a {
+  font-weight: bold;
+}
+
+/*******************************************************************
+ * LESSON PLAN - LANGUAGE MENU
+ *******************************************************************/
+table.lesson-content #languages .language-list {
+  margin-top: 20px;
+  margin-left: 10px;
+}
+table.lesson-content #languages .language-list  div.item-list {
+  margin-top: 5px;
+  font-weight: bold;
+}
+table.lesson-content #language-form {
+  margin-top: 40px;
+  padding-bottom: 3em;
+  width: 33em;
+}
+
+table.lesson-content #language-form #language-form-inner {
+  margin-left: 10px;
+}
+
+table.lesson-content #language-form #language-form-inner #edit-submit {
+  float: right;
+}
+
+/*******************************************************************
+ * LESSON PLAN - NODE FORM
+ *******************************************************************/
+ 
+.field-field-lesson-plan-objectives {
+  margin-top: 8px;
+}
+.field-field-lesson-plan-photo {
+  margin-top: 8px;
+}
+.field-field-lesson-plan-materials {
+  margin-top: 8px;
+}
+.field-field-lesson-plan-layout {
+  margin-top: 8px;
+}
+.field-field-lesson-plan-overview {
+  margin-top: 8px;
+}
+.field-field-lesson-plan-steps {
+  margin-top: 8px;
+}
+
+/*******************************************************************
+ * LESSON PAGE - LAYOUT
+ *******************************************************************/
+table.lesson-content table tbody {
+  border-style: none;
+}
+table.lesson-content td.content-left {
+  width: 25%;
+}
+table.lesson-content td.content-middle {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+table.lesson-content td.content-right{
+  width: 25%;
+}
+
+/*******************************************************************
+ * LESSON PAGE - CONTENT CONTAINER
+ *******************************************************************/
+
+table.lesson-content h2 {
+  margin-bottom: 16px;
+}
+
+/*******************************************************************
+ * NEW LESSONS
+ *******************************************************************/
+
+/* 
+table.lesson-content #new-lessons {
+}
+
+table.lesson-content #new-lessons h3 {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+table.lesson-content #new-lessons img {
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+table.lesson-content #new-lessons div.views-row{
+  clear: both;
+}
+*/
+
+/*******************************************************************
+ * POPULAR LESSONS
+ *******************************************************************/
+
+table.lesson-content #popular-lessons {
+}
+
+/*******************************************************************
+ * LESSONS BY AUTHOR
+ *******************************************************************/
+ 
+.language-details-page #lessons-by-author .view-id-authors_by_lang .view-content div {
+  display: inline;
+}
+
+
+
+
+
+
+.language-details-page div#recent-content .views-row{
+  margin-top: 0px;
+  margin-bottom: 4px;
+}
+
+.lesson-content .node-teaser {
+  margin-bottom: 4px;
+}
+
+
+.lesson-content #lessons-by-author .view-authors-by-type-lang .view-content div {
+  display: inline;
+}

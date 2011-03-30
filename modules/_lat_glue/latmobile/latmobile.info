@@ -1,0 +1,4 @@
+name = LAT Mobile Uploads
+package = .LiveAndTell
+description = User mobile uploads (currently for PictureBooks)
+core = 6.x

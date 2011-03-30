@@ -1,0 +1,10 @@
+name = LiveAndTell Theme
+core = 6.x
+engine = phptemplate
+stylesheets[all][] = css/page.css
+stylesheets[all][] = css/drupal-elements.css
+stylesheets[all][] = css/lat-elements.css
+stylesheets[all][] = css/module-og.css
+stylesheets[all][] = node/node-song.css
+stylesheets[all][] = node/node-lesson_plan.css
+stylesheets[all][] = node/teaser.css

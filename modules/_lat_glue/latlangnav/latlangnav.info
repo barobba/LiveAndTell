@@ -1,0 +1,4 @@
+name = LAT language navigation pages
+description = Organizes content into pages, by language
+package = .LiveAndTell
+core = 6.x

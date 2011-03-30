@@ -1,0 +1,81 @@
+<?php
+
+function latuserworkspace_init() {
+  $path = drupal_get_path('module', 'latuserworkspace');
+  drupal_add_css("$path/theme/css/latuserworkspace-user-workspace.css", 'module');
+}
+
+function latuserworkspace_menu() {
+  return array(
+  
+    'lat/user/workspace' => array(
+      'title' => 'Workspace',
+      'page callback' => 'theme',
+      'page arguments' => array('lat_user_workspace'),
+      'access callback' => 'user_is_logged_in',
+    ),
+    
+    'lat/user/workspace/add/%' => array(
+      'title' => 'Add content',
+      'page callback' => '_latuserworkspace_add_content',
+      'page arguments' => array(4),
+      'access callback' => 'user_is_logged_in',
+    ),
+    
+  );
+}
+
+function _latuserworkspace_add_content($type) {
+
+  // Prepare node
+  $node = new stdClass();
+  $node->type = str_replace('-', '_', $type);
+  $node->title = 'Temp';
+  $node->uid = $GLOBALS['user']->uid;
+  $node->status = false;
+  node_save($node);
+  $node_type_title = node_get_types('name', $node);
+  $node->title = "My $node_type_title"; // node_get_types only works after node_save (for some types)
+  node_save($node);
+
+  //
+  // Do one of the following (based on keyword in query string):
+  //
+  //   1. Return the snippet of content that has changed on the website
+  //   2. Redirect the user back to their workspace
+  //
+  if (array_key_exists('ajax', $_GET)) {  
+    $short_date = format_date($node->changed, 'small');
+    $editor_path = url("user/redirect/editor/$node->nid");
+    $delete_path = url("node/$node->nid/delete");
+    $row = <<<EOS
+      <tr class="not-published">
+        <td class="views-field views-field-title"><a href="$editor_path">$node->title</a></td>
+        <td class="views-field views-field-type">$node_type_title</td>
+        <td class="views-field views-field-changed">$short_date</td>
+        <td class="views-field views-field-status">No</td>
+        <td class="views-field views-field-delete-node"><a href="$delete_path?destination=lat%2Fuser%2Fworkspace">delete</a></td>
+      </tr>
+EOS;
+
+        //<td class="views-field views-field-view-node"><a href="/liveandtell/node/$node->nid">view</a></td>
+        //<td class="views-field views-field-edit-node"><a href="/liveandtell/node/$node->nid/edit?destination=lat%2Fuser%2Fworkspace">edit</a></td>
+
+
+    print $row;
+    module_invoke_all('exit');
+  } else {
+    drupal_goto('lat/user/workspace');
+  }
+}
+
+function latuserworkspace_theme($existing, $type, $theme, $path) {    
+  return array(  
+    'lat_user_workspace' => array(
+      'arguments' => array(),
+      'template' => 'lat-user-workspace',
+      'path' => "$path/theme",
+      'file' => 'theme.inc',
+    ),
+  );
+}
