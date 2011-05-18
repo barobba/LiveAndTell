@@ -1,0 +1,4 @@
+package = .LiveAndTell
+name = LAT Service
+description = Service API for LiveAndTell content.
+core = 6.x

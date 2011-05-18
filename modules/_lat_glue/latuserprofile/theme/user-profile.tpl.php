@@ -1,7 +1,7 @@
 <table id="lat-page-layout-table" class="profile-content" >
   <tr>
   
-    <td class="profile-content-left">
+    <td class="column profile-content-left">
       <?php if ($profile['user_picture']): ?>
         <?php print $profile['user_picture'] ?>
       <?php endif ?>
@@ -10,7 +10,7 @@
 	    <?php endif; ?>
     </td>
     
-    <td class="profile-content-middle">
+    <td class="column profile-content-middle">
       <?php print $lat_profile_content ?>
     </td>
     

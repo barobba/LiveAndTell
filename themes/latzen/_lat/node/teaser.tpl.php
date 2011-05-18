@@ -7,10 +7,10 @@
   <div class="node-content-wrapper rounded-corners-container">
     <table class="node-content-wrapper-layout-table">
       <tr>
-        <td class="node-teaser-left">
+        <td class="column node-teaser-left">
           <div class="node-icon"><?php print $node_icon ?></div>
         </td>
-        <td class="node-teaser-right">
+        <td class="column node-teaser-right">
           <div class="node-content">
             <div class="language">
               <?php print $lat_node_language ?>

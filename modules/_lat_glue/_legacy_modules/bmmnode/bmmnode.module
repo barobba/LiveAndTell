@@ -136,29 +136,34 @@ function bmmnode_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     switch ($op) {
       case 'view':
         $nid = $node->nid;
-        
-        //Add affix button
-        $node->content['bmmnode_add_entry_button'] = array(
-          '#type' => 'button',
-          '#attributes' => array('onclick' => "location.href='" . check_url('/node/add/bmm-affix/' . $nid) . "';"),
-          '#value' => t('Add Entry'),
-          '#weight' => -10,
-        );
-        
-        //List of affixes
-        $node->content['bmmnode_entry_list'] = array(
-          '#type' => 'markup',
-          '#value' => views_embed_view('bmm_affix_list', 'default', $nid),
-        );      
-
-        //Publish bmm node button
-        $node->content['bmmnode_publish_button'] = array(
-          '#type' => 'button',
-          '#attributes' => array('onclick' => "location.href='" . check_url('/node/'.$nid.'/publish?destination='.$_GET['q'])."';"),
-          '#value' => t($node->status == 0 ? 'Publish' : 'Make private'),
-          '#weight' => -9,
-        );
-      break;
+        $is_teaser = $a3;
+        $is_page = $a4;
+        if ($is_page) {
+          if (node_access('update', $node)) {
+            //Add affix button
+            $node->content['bmmnode_add_entry_button'] = array(
+              '#type' => 'button',
+              '#attributes' => array('onclick' => "location.href='" . check_url('/node/add/bmm-affix/' . $nid) . "';"),
+              '#value' => t('Add Entry'),
+              '#weight' => -10,
+            );
+            //Publish bmm node button
+            $node->content['bmmnode_publish_button'] = array(
+              '#type' => 'button',
+              '#attributes' => array('onclick' => "location.href='" . check_url('/node/'.$nid.'/publish?destination='.$_GET['q'])."';"),
+              '#value' => t($node->status == 0 ? 'Publish' : 'Make private'),
+              '#weight' => -9,
+            );
+          }
+        }
+        if (node_access('view', $node)) {
+          //List of affixes
+          $node->content['bmmnode_entry_list'] = array(
+            '#type' => 'markup',
+            '#value' => views_embed_view('bmm_affix_list', 'default', $nid),
+          );      
+        }
+        break;
       case 'update':
         $view = views_get_view('bmm_affix_list');
         $view->preview('default', array($node->nid));   
@@ -167,7 +172,7 @@ function bmmnode_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           $updatenode->status = $node->status;
           node_save($updatenode);
         }
-      break;
+        break;
     }
   }
 }

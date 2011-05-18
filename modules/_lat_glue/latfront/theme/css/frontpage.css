@@ -1,0 +1,49 @@
+
+/*******************************************************************
+ * PAGE LAYOUT TABLE
+ *******************************************************************/
+table#lat-page-layout-table {
+	margin-top: 0;
+}
+table#lat-page-layout-table td.col-left {
+  width: 200px;
+}
+table#lat-page-layout-table td.col-center {
+}
+table#lat-page-layout-table td.col-right {
+  width: 200px;
+}
+
+/*******************************************************************
+ * Login Notice
+ *******************************************************************/
+
+div#login-notice {
+  text-align: center;
+} 
+ 
+/*******************************************************************
+ * SPONSOR LIST
+ *******************************************************************/
+div.view-lat-frontpage-sponsors .views-field-field-subscrip-image-fid {
+  float: left;
+  padding: 0px 8px 0px 0px;
+} 
+div.view-lat-frontpage-sponsors h2 {
+  margin: 4px 0px 4px 0px;
+}
+div.view-lat-frontpage-sponsors a:hover h2 {
+  text-decoration: underline;
+}
+
+/*******************************************************************
+ * FEATURED CONTENT LIST
+ *******************************************************************/
+div.view-id-lat_frontpage_content {
+  padding: 0px 8px;
+}
+
+div.view-id-lat_frontpage_content b.bottom {
+  display: block;
+  margin-bottom: 4px;
+}

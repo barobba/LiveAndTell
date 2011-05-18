@@ -1,17 +1,13 @@
 <?php
 
 /**
- * HOOK_FORM_ALTER
+ * Implementation of hook_form_alter().
  */
 function latloginredirect_form_alter(&$form, $form_state, $form_id) {
-  //drupal_set_message($form_id);
-  //dpm($form_id);
-  //dpm($form);
   switch ($form_id) {
     case 'user_login':
     case 'user_register':
-	    $form['#redirect'] = 'user/redirect/workspace'; 
+	    //$form['#redirect'] = 'user/redirect/workspace'; 
       break;
   }
 }
-

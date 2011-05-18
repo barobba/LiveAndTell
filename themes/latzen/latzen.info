@@ -47,22 +47,26 @@ stylesheets[print][] = css/print.css
 
 
 
+
+;
+; LIVEANDTELL STYLESHEETS
+;
+
+; Page
 stylesheets[all][]   = _lat/css/page.css
 stylesheets[all][]   = _lat/css/drupal-elements.css
 stylesheets[all][]   = _lat/css/lat-elements.css
 stylesheets[all][]   = _lat/css/module-og.css
 stylesheets[all][]   = _lat/css/region-sidebar-first.css
 stylesheets[all][]   = _lat/css/region-sidebar-second.css
+stylesheets[all][]   = _lat/css/navigation-primary-and-secondary.css
+
+; Nodes
 stylesheets[all][]   = _lat/node/node-song.css
 stylesheets[all][]   = _lat/node/node-lesson_plan.css
 stylesheets[all][]   = _lat/node/teaser.css
 
-; Features: Notebooks
-stylesheets[all][]   = _lat/features/notebooks-ui/style.css
-stylesheets[all][]   = _lat/features/notebooks-ui/block.css
 
-; Views
-stylesheets[all][]   = _lat/views/latnb/style.css
 
 
   ; Set the conditional stylesheets that are processed by IE.
@@ -117,5 +121,5 @@ settings[zen_breadcrumb_separator] = ' › '
 settings[zen_breadcrumb_home]      = 1
 settings[zen_breadcrumb_trailing]  = 1
 settings[zen_breadcrumb_title]     = 0
-settings[zen_rebuild_registry]     = 1
+settings[zen_rebuild_registry]     = 0
 settings[zen_wireframes]           = 0

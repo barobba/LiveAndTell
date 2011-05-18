@@ -1,11 +1,14 @@
 <?php
 
-/**
- * Implementation of hook_views_api().
- */
+function latviews_init() {
+  $path = drupal_get_path('module', 'latviews');
+  drupal_add_css("$path/css/latalbum_entries.css");  
+  drupal_add_css("$path/css/latalbum_entries_teaser.css");  
+}
+
+// Tell "Views" to look at this module, using Version "2" API.
 function latviews_views_api() {
   return array(
-    'api' => 2,
-    'path' => drupal_get_path('module', 'latviews'),
+    'api' => 2, // Version 2 of Views API.
   );
 }

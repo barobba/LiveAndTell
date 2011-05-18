@@ -21,6 +21,11 @@ function latmobile_menu() {
       'file' => 'latmobile.admin.inc',
     ),
     // Store user mobile number for uploads
+    'user/%user_uid_optional/edit/mobile/number' => array(
+      'title' => 'Mobile uploads',
+      'access callback' => 'user_edit_access',
+      'access arguments' => array(1),
+    ),
     'user/%user/edit/mobile' => array(
       'title' => 'Mobile uploads',
       'page callback' => 'drupal_get_form',
@@ -29,7 +34,6 @@ function latmobile_menu() {
       'access arguments' => array(1),
       'type' => MENU_LOCAL_TASK,
       'tab_parent' => 'user/%/edit',
-      'file' => 'latmobile.pages.inc',    
     ),
     // Verify MMS email is registered
     'latmobile-sender-verify' => array(
@@ -136,12 +140,9 @@ function latmobile_mobile_number_check($mobile) {
       m.mobile_number_filtered = '%s'
 EOS;
   $rset = db_query_range($query, $mobile, 0, 1);
-  $result = db_result($rset); 
-  if ($result != false) {
-    return true;
-  } else {
-    return false;
-  }
+  $result = db_result($rset);
+  $is_results_returned = $result !== false;
+  return $is_results_returned;
 }
 
 function latmobile_mobile_number_check_format($mobile) {
@@ -162,9 +163,11 @@ function latmobile_mobile_number_get($uid) {
       {latmobile_registration} m
     where 
       m.uid = %d
+    limit 1
 EOS;
-  $rset = db_query_range($query, $uid, 0, 1);
-  return db_result($rset);
+  $rset = db_query($query, $uid);
+  $result = db_result($rset);
+  return $result;
 }
 
 function latmobile_mobile_number_filter($mobile) {
@@ -191,10 +194,80 @@ function latmobile_mobile_number_update($uid, $mobile) {
     update 
       {latmobile_registration} m
     set
-      m.mobile_number = '%s'
-      and m.mobile_number_filtered = '%s'
+      m.mobile_number = '%s',
+      m.mobile_number_filtered = '%s'
     where
       m.uid = %d
 EOS;
   db_query($sql_update, $mobile, $mobile_filtered, $uid);
+}
+
+/**
+ * LATMobile User Form
+ * 
+ * Returns the form for adding mobile number 
+ * 
+ * @param $form_state
+ */
+function latmobile_user_form(&$form_state, $account) {
+  $form['account'] = array(
+    '#type' => 'value',
+    '#value' => $account,
+    '#required' => TRUE,
+  );
+  $form['mobile_number'] = array(
+    '#title' => t('Mobile number'),
+    '#type' => 'textfield',
+    '#size' => 60,
+    '#maxlength' => 60,
+    '#default_value' => isset($account->latmobile_mobile_number) ? $account->latmobile_mobile_number : '',
+    '#description' => t('Send an MMS to "mobile@liveandtell.com". First, enter the mobile number you will use to send pictures to the website. Then, send an MMS of the picture. Please wait 5-10 minutes for the picture to show up.'),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  return $form;
+}
+
+function latmobile_user_form_validate ($form, &$form_state) {
+  $mobile = trim($form_state['values']['mobile_number']);
+  $account = $form_state['values']['account'];
+  if (!empty($mobile)) {
+    // check mobile number format
+    if (latmobile_mobile_number_check_format($mobile) == false) {
+      form_set_error('mobile_number', t('Invalid mobile number format'));
+    }
+    // check number isn't already used
+    if (latmobile_mobile_number_check($mobile) == TRUE) {
+      // check that both accounts are the same
+      $account2 = latmobile_account_load_mobile($mobile); 
+      if ($account->uid == $account2->uid) {
+        // Pass
+      }
+      else {
+        form_set_error('mobile_number', t('This number is already registered with another user.'));
+      }
+    }
+  } else {
+    form_set_error('mobile_number', t('Mobile number is missing.'));
+  }
+}
+
+/**
+ * Implementation of hook_[form]_submit
+ * 
+ * @param $form
+ * @param $form_state
+ */
+function latmobile_user_form_submit($form, &$form_state) {
+  $account = $form_state['values']['account'];
+  $mobile_number = $form_state['values']['mobile_number'];
+  if (latmobile_mobile_number_get($account->uid) == FALSE) {
+    latmobile_mobile_number_insert($account->uid, $mobile_number);
+  } 
+  else {
+    latmobile_mobile_number_update($account->uid, $mobile_number);
+  }
+  drupal_set_message('Mobile information saved');
 }

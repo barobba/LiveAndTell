@@ -1,5 +1,12 @@
 <?php
 
+function latcommon_init() {
+  $path = drupal_get_path('module', 'latcommon');
+  drupal_add_css("$path/css/common.css");
+  drupal_add_css("$path/latMsgOverlay/latMsgOverlay.css");
+  drupal_add_js("$path/latMsgOverlay/functions.js");
+}
+
 function _lat_node_initialize($type) {
   module_load_include('inc', 'node', 'node.pages');
   $node = new stdClass();
@@ -18,4 +25,99 @@ function _lat_array_split($input_array, $subarray_size) {
     $result []= $input_array;
   }
   return $result;
+}
+
+function user_and_node_access($account_op, $account_for_user_access, $node_op, $node, $account_for_node_access = NULL) {
+  $result = TRUE;
+  switch ($account_op) {
+    case 'view':
+      $result = $result && user_view_access($account_for_user_access);
+      break;
+    case 'edit':
+      $result = $result && user_edit_access($account_for_user_access);
+      break;
+    default:
+      $result = FALSE;
+      break;
+  }
+  $result = $result && node_access($node_op, $node, $account_for_node_access);
+  return $result;  
+}
+
+function lat_curl($url, $options = NULL) {
+  
+  if (!is_null($options)) {
+    if (isset($options['postfields'])) {
+      $postfields = $options['postfields'];
+    }
+  }
+  
+  $CURL = curl_init();
+  curl_setopt ($CURL, CURLOPT_URL, $url);
+  curl_setopt ($CURL, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt ($CURL, CURLOPT_CONNECTTIMEOUT, 5);
+  if (isset($postfields)) {
+    curl_setopt ($CURL, CURLOPT_POST, TRUE);
+    curl_setopt ($CURL, CURLOPT_POSTFIELDS, $postfields);
+  }
+  $results = curl_exec($CURL);
+  curl_close($CURL);
+  return $results;
+}
+
+function lat_curl_jsonp($url, $jsonp_key) {
+  // Parse url
+  $url_parts = parse_url($url);
+  $query_string = $url_parts['query'];
+  $query_string_array = array();
+  parse_str($query_string, $query_string_array);
+  // Replace JSON callback token
+  $jsonp_hash = md5($jsonp_key);
+  $query_string_array[$jsonp_key] = $jsonp_hash;
+  // Rebuild query string
+  $new_query_string = http_build_query($query_string_array, '', '&');
+  // Build URL
+  $url_parts['query'] = $new_query_string;
+  $modified_url
+    = $url_parts['scheme'] . '://'
+    . $url_parts['host']
+    . $url_parts['path']
+    . '?' . $url_parts['query'];
+  //  Make call jsoncall
+  $results = lat_curl($modified_url);
+  //  Fix results
+  $results = preg_replace("/^$jsonp_hash\\((.*)\\)$/", '$1', $results);
+  $results = json_decode($results);
+  return $results;
+}
+
+/**
+ * Accepts an operation, a node, and a type.
+ *
+ * @param $op
+ *  A node operation.
+ *
+ * @param $node
+ *  A reference to a node
+ *
+ * @param $type
+ *  A node type
+ *
+ * @return
+ *  TRUE is returned if the type property of $node matches the $type
+ *  parameter and the user has permission to perform the operation
+ *  in $op on $node.  Otherwise FALSE is returned.
+ */
+function lnt_node_access_and_type($op, &$node, $type) {
+  return $node->type == $type && node_access($op, $node);
+}
+
+function lat_preprocess_page_for_vertical_tabs(&$vars) {
+  $scripts = explode("\n", $vars['scripts']);
+  foreach ($scripts as $index => $script) {
+    if (strpos($script, 'vertical_tabs') !== FALSE) {
+      unset($scripts[$index]);
+    }
+  }
+  $vars['scripts'] = implode("\n", $scripts);
 }

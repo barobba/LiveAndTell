@@ -79,7 +79,6 @@ function theme_audio_formatter_teaser($element) {
 }
 
 function _audio_embed_code($parameters) {
-  
   // Get values from $parameter array
   $type     = $parameters['type'];
   $id       = $parameters['id'];
@@ -93,26 +92,31 @@ function _audio_embed_code($parameters) {
   $filename = $parameters['filename'];
 
   // Construct path to swf object with flashvars as query string
-  $url_settings = array();
+  $query = array();
+  $query['filename'] = $filename;
   if (array_key_exists('field', $parameters)) {
-    $url_settings = array('query' => array(
-      'field' => $field,
-      'filename' => $filename
-    ));
+    $query['field'] = $field;
   }
+  $url_settings = array();
+  $url_settings = array('query' => $query);
   $src = url("$path/$type.swf", $url_settings);
 
   // Construct embed code
-  $code = '';
-  $code .= '<object id="'.$id.'" name="'.$name.'" width="'.$width.'" height="'.$height.'">';
-  $code .=     '<param name="movie" value="'.$src.'"/>';
-  $code .=     '<param name="wmode" value="transparent"/>';
-  $code .=     '<embed id="'.$id.'" name="'.$name.'" width="'.$width.'" height="'.$height.'" ';
-  $code .=            'type="application/x-shockwave-flash" ';
-  $code .=            'wmode="transparent" ';
-  $code .=            'src="'.$src.'">';
-  $code .=     '</embed>';
-  $code .= '</object>';
+  $code = "
+    <object id='$id' name='$name' width='$width' height='$height'>
+      <param name='movie' value='$src'></param>
+      <param name='wmode' value='transparent'></param>
+      <embed 
+        id     = '$id' 
+        name   = '$name' 
+        width  = '$width' 
+        height = '$height'
+        type   = 'application/x-shockwave-flash'
+        wmode  = 'transparent'
+        src    = '$src'
+      ></embed>
+    </object>
+  ";
 
   // Return embed code
   return $code;

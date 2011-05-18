@@ -1,7 +1,4 @@
 <?php
-/*
- * View 'lat_user_workspace_content'
- */
 $view = new view;
 $view->name = 'lat_user_workspace_content';
 $view->description = '';
@@ -48,7 +45,7 @@ $handler->override_option('fields', array(
     'alter' => array(
       'alter_text' => 0,
       'text' => '',
-      'make_link' => 1,
+      'make_link' => 0,
       'path' => 'user/redirect/editor/[nid]',
       'link_class' => '',
       'alt' => '',
@@ -60,17 +57,47 @@ $handler->override_option('fields', array(
       'max_length' => '',
       'word_boundary' => 1,
       'ellipsis' => 1,
-      'strip_tags' => 0,
       'html' => 0,
+      'strip_tags' => 0,
     ),
     'empty' => '',
     'hide_empty' => 0,
     'empty_zero' => 0,
-    'link_to_node' => 0,
+    'link_to_node' => 1,
     'exclude' => 0,
     'id' => 'title',
     'table' => 'node',
     'field' => 'title',
+    'relationship' => 'none',
+  ),
+  'edit_node' => array(
+    'label' => 'Edit',
+    'alter' => array(
+      'alter_text' => 0,
+      'text' => '',
+      'make_link' => 0,
+      'path' => '',
+      'link_class' => '',
+      'alt' => '',
+      'prefix' => '',
+      'suffix' => '',
+      'target' => '',
+      'help' => '',
+      'trim' => 0,
+      'max_length' => '',
+      'word_boundary' => 1,
+      'ellipsis' => 1,
+      'html' => 0,
+      'strip_tags' => 0,
+    ),
+    'empty' => '',
+    'hide_empty' => 0,
+    'empty_zero' => 0,
+    'text' => 'Edit',
+    'exclude' => 0,
+    'id' => 'edit_node',
+    'table' => 'node',
+    'field' => 'edit_node',
     'relationship' => 'none',
   ),
   'type' => array(
@@ -197,36 +224,6 @@ $handler->override_option('fields', array(
     'field' => 'status',
     'relationship' => 'none',
   ),
-  'delete_node' => array(
-    'label' => 'Delete',
-    'alter' => array(
-      'alter_text' => 0,
-      'text' => '',
-      'make_link' => 0,
-      'path' => '',
-      'link_class' => '',
-      'alt' => '',
-      'prefix' => '',
-      'suffix' => '',
-      'target' => '',
-      'help' => '',
-      'trim' => 0,
-      'max_length' => '',
-      'word_boundary' => 1,
-      'ellipsis' => 1,
-      'strip_tags' => 0,
-      'html' => 0,
-    ),
-    'empty' => '',
-    'hide_empty' => 0,
-    'empty_zero' => 0,
-    'text' => '',
-    'exclude' => 0,
-    'id' => 'delete_node',
-    'table' => 'node',
-    'field' => 'delete_node',
-    'relationship' => 'none',
-  ),
 ));
 $handler->override_option('sorts', array(
   'changed' => array(
@@ -321,8 +318,6 @@ $handler->override_option('access', array(
 $handler->override_option('cache', array(
   'type' => 'none',
 ));
-$handler->override_option('empty', 'Your workspace is currently empty.
-Use the menu on the left to add pages to your workspace.');
 $handler->override_option('empty_format', '1');
 $handler->override_option('items_per_page', 0);
 $handler->override_option('style_plugin', 'table');
@@ -351,4 +346,20 @@ $handler->override_option('style_options', array(
     ),
   ),
   'default' => '-1',
+));
+$handler = $view->new_display('page', 'Page', 'page_1');
+$handler->override_option('path', 'user/media-stream');
+$handler->override_option('menu', array(
+  'type' => 'none',
+  'title' => '',
+  'description' => '',
+  'weight' => 0,
+  'name' => 'navigation',
+));
+$handler->override_option('tab_options', array(
+  'type' => 'none',
+  'title' => '',
+  'description' => '',
+  'weight' => 0,
+  'name' => 'navigation',
 ));

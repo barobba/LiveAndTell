@@ -1,7 +1,4 @@
 <?php
-/*
- * View 'authors_by_type_lang'
- */
 $view = new view;
 $view->name = 'authors_by_type_lang';
 $view->description = 'Authors of content by type and language';

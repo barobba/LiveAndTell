@@ -10,20 +10,21 @@ function latuserworkspace_preprocess_lat_user_workspace(&$vars) {
   $path = drupal_get_path('module', 'latuserworkspace');
   
   // Add javascript for this page
-  drupal_add_js("$path/theme/js/latuserworkspace-user-workspace.js");
+//  drupal_add_js("$path/theme/js/latuserworkspace-user-workspace.js");
   
   // Hide title
-  drupal_set_title('');
+  //drupal_set_title('');
 
   // TODO Move this constant to an admin form
   // Prepare content menu
   $types = node_get_types();
   $use_types = array(
-    'bmm',             //Affixing
-    'lesson_plan',     //Lesson plan
-    'lnt_album',       //Picture book
+    'image',
     'song',            //Song
-    'mmd',             //Workbook
+    'lesson_plan',     //Lesson plan
+    'bmm',             //Affixing
+    //'lnt_album',       //Picture book
+    //'mmd',             //Workbook
   ); 
   foreach ($types as $type) {
     if (in_array($type->type, $use_types) && node_access('create', $type->type, $user)) {

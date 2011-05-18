@@ -119,7 +119,30 @@
 <head>
   <title><?php print $head_title; ?></title>
   <?php print $head; ?>
+  <style type="text/css">
+    @font-face {
+      font-family: "DejaVu Sans"
+      src: url("/sites/liveandtell.com/font-face/dejavu/DejaVuSans.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "DejaVu Serif"
+      src: url("/sites/liveandtell.com/font-face/dejavu/DejaVuSerif.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "Aboriginal Serif Regular";
+      src: url("/sites/liveandtell.com/font-face/aboriginal-serif/AboriginalSerifREGULAR.ttf") format("truetype");
+    }
+    @font-face {
+      font-family: "Aboriginal Sans Regular";
+      src: url("/sites/liveandtell.com/font-face/aboriginal-sans/AboriginalSansREGULAR.ttf") format("truetype");
+    }
+  </style>
   <?php print $styles; ?>
+  <style type="text/css">
+    *, body, caption, th, td, input, textarea, select, option, legend, fieldset {
+      font-family: "DejaVu Sans", "Aboriginal Sans Regular";
+    }
+  </style>
   <?php print $scripts; ?>
 </head>
 <body class="<?php print $classes; ?>">

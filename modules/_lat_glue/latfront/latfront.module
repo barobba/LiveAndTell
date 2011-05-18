@@ -2,7 +2,7 @@
 
 function latfront_init() {
   $path = drupal_get_path('module', 'latfront');
-  drupal_add_css("$path/theme/css/latfront-lat-frontpage.css", 'module');  
+  drupal_add_css("$path/theme/css/frontpage.css", 'module');  
 }
 
 function latfront_menu() {

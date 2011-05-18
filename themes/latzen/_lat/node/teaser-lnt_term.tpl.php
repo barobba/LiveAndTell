@@ -3,9 +3,9 @@
 
     <!--   term   -->
     <?php if(node_access('update', $node)): ?>
-      <?php print l($title, "node/$node->nid/edit",array('html' => true,'query'=>array('destination' => $_GET['q']))) ?>
+      <?php print l($node->field_entry_text[0]['value'], "node/$node->nid/edit",array('html' => true,'query'=>array('destination' => $_GET['q']))) ?>
     <?php else: ?>
-      <?php print $title; ?>
+      <?php print $node->field_entry_text[0]['value']; ?>
     <?php endif; ?>
     
     <!--   audio   -->

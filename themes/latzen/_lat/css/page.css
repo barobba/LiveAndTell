@@ -1,19 +1,18 @@
-
 /*****************************************************************************
- * BODY
+ * PAGE
  */
  
 body {
   /*font-family: "Aboriginal Sans", Tahoma,Verdana,Arial,Helvetica,sans-serif*/
   /*font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;*/
 	font-size: 1em;
-	background-color: #eee;
+  background-color: #eeeeee;
 }
 
-/*****************************************************************************
- * PAGE WRAPPER
- */
- 
+iframe body {
+	background-color: #ffffff;
+}
+	
 #page-wrapper {
   margin-bottom: 16px;
 }
@@ -48,68 +47,7 @@ h1#site-name, div#site-name a:hover {
   text-decoration: underline;
 }
 
-/* USER LINKS */
-ul#user-links {
-	font-size: 1em;
-	float: right;
-	margin: 0px;
-  margin-top: .15em;
-	margin-right: .5em;
-	margin-bottom: 1em; 
-}
 
-/* NAVIGATION */
-#page-navigation {
-  clear: both;
-}
-
-/* NAVIGATION LINKS */
-#page-navigation ul.links {
-  margin: 0em;
-  padding: 0em;
-}
-
-/* PRIMARY NAVIGATION */
-#page-navigation ul.primary-links {
-	background-color: rgb(225,225,225);
-  height: 2.5em;
-}
-#page-navigation ul.primary-links li {
-  line-height: 2.5em;
-  padding-top: .2em;
-  padding-bottom: .2em;
-  padding-left: 2em;
-  padding-right: 2em;
-}
-#page-navigation ul.primary-links li.active-trail {
-  background-color: rgb(240,240,240);
-  border-radius: 4px;
-}
-#page-navigation ul.primary-links a {
-	color: black;
-}
-
-/* SECONDARY NAVIGATION */
-#page-navigation ul.secondary-links {
-  background-color: rgb(240,240,240);
-  line-height: 4em;
-}
-#page-navigation ul.secondary-links li {
-  line-height: 4em;
-}
-#page-navigation ul.secondary-links a {
-  color: black;
-  padding: .5em .75em .6em .75em;
-}
-#page-navigation ul.secondary-links li.active a,
-#page-navigation ul.secondary-links li.active-trail a
-{
-  /*border: .2em solid rgb(220,220,220);*/
-  background-color: rgb(220,220,220);
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: bold;
-}
 
 /**
  * MAIN
@@ -150,14 +88,10 @@ h1#page-title {
   margin: 0px;
 }
 
-/*
-body.page-user h1#page-title {
-  padding-left: 292px;
-}
-*/
+/*****************************************************************************
+ * FOOTER
+ */
 
-/*
-body.page-user form {
-  padding-left: 285px;
+#page-wrapper #footer {
+	margin-top: 2em;
 }
-*/

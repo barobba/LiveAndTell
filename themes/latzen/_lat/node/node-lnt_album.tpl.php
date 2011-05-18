@@ -1,5 +1,10 @@
-<?php print $field_latimage_ref_rendered ?>
 <div id="node-<?php print $node->nid; ?>" class="<?php print $node_classes ?>">
+
+  <!-- NODE CONTENT -->
+  <?php print $content ?>
+  
+<?php
+/*
   <table id="lat-page-layout-table">
     <tbody>
       <tr>
@@ -9,9 +14,15 @@
         </td>
         -->
         <td class="center">
+        
+          <!-- SHOW IMAGES THAT THIS ALBUM REFERENCES -->
+          <?php print $field_latimage_ref_rendered ?>
+          
+          <!-- SHOW IMAGES THAT REFERENCE THIS ALBUM -->
           <?php if (isset($lat_album_images)): ?>
             <?php print $lat_album_images ?>
           <?php endif; ?>
+          
         </td>
         <td class="right">
           <h2><?php print $title ?></h2>
@@ -23,8 +34,8 @@
     </tbody>
   </table>
   
-  <hr />
-  <?php print $content ?>
+*/
+?>
   
   <div class="meta submitted">
     <?php if (isset($field_credit_rendered)): ?>

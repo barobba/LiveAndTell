@@ -1,0 +1,9 @@
+
+.view-id-latalbum_entries table.views-view-grid {
+	width: 100%;
+}
+
+.view-id-latalbum_entries table.views-view-grid td {
+	vertical-align: bottom;
+	text-align: center;
+}

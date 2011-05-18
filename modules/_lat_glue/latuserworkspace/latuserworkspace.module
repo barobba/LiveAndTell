@@ -9,7 +9,7 @@ function latuserworkspace_menu() {
   return array(
   
     'lat/user/workspace' => array(
-      'title' => 'Workspace',
+      'title' => 'Media stream',
       'page callback' => 'theme',
       'page arguments' => array('lat_user_workspace'),
       'access callback' => 'user_is_logged_in',

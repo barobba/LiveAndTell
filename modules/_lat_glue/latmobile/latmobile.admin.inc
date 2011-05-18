@@ -75,6 +75,7 @@ function _latmobile_sender_verify_page() {
 function _latmobile_submit_page() {
   header('Content-Type: text/plain');
   if (isset($_REQUEST['latmobile_data'])) {
+    
     $data = unserialize($_REQUEST['latmobile_data']);
     $sender = $data['sender'];
     $files = $data['files'];
@@ -108,7 +109,7 @@ function _latmobile_submit_page() {
       foreach($files as $filename) {
 
         // Prepare image field
-        $field_lnt_image = content_fields('field_lnt_image', 'lnt_image');
+        $field_lnt_image = content_fields('field_image', 'image');
         $field_lnt_image_tmp = file_directory_temp().'/'.$filename;
         $field_lnt_image_validators = array_merge(
           filefield_widget_upload_validators($field_lnt_image), 
@@ -126,25 +127,37 @@ function _latmobile_submit_page() {
         
         if ($field_lnt_image_data != 0) {
 
-          // Prepare node
+          // Save image node
           $image_node = new stdClass();
-          $image_node->type = 'lnt_image';
-          $image_node->title = 'Mobile upload image';
+          $image_node->type = 'image';
+          $image_node->title = 'Image, mobile upload';
           $image_node->uid = $account->uid;
           $image_node->status = FALSE;
           $image_node->active = TRUE;
-          $image_node->field_lnt_image []= $field_lnt_image_data;
-          $image_node->field_lnt_image_caption[0]['value'] = $text;
-          $image_node->field_lnt_album_noderef[0]['nid'] = $picture_book_node->nid;
-          
-          // Save node
-          $submit_results_node = node_submit($image_node);
-          if ($submit_results_node) {
-            node_save($submit_results_node);
-            print "Posting completed";
-          } else {
-            print "Problem with image node submission.\n";
-          } 
+          $image_node->field_image []= $field_lnt_image_data;
+          node_save($image_node);
+          print "Posting completed";
+
+          // Save tagging node
+          $latimage = _lat_node_initialize('lnt_image');
+          $latimage->uid = $account->uid;
+          $latimage->title = 'Tagging node';
+          $latimage->field_abstract_image_noderef[0]['nid'] = $image_node->nid;
+          $latimage->field_lnt_image_caption[0]['value'] = $text;
+          node_save($latimage); 
+          print "Image attached to tagging node.";
+
+          // Save picture book entry
+          $max_weight = latnb_entry_weights_max($picture_book_node);
+          $new_weight = $max_weight->delta + 1;
+          $picture_book_entry = _lat_node_initialize('lnt_album_entry');
+          $picture_book_entry->uid = $account->uid;
+          $picture_book_entry->title = 'Picture book entry';
+          $picture_book_entry->field_lnt_album_noderef[0]['nid'] = $picture_book_node->nid;
+          $picture_book_entry->field_delta[0]['value'] = $new_weight;
+          $picture_book_entry->field_lnt_image_noderef[0]['nid'] = $latimage->nid;
+          node_save($picture_book_entry);
+          print "Tagging node attached to album.";
           
           // Remove temporary file
           unlink($field_lnt_image_tmp);          

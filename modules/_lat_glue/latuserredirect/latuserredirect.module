@@ -23,7 +23,8 @@ function _latuserredirect_editor_handler($node) {
   $nid = $node->nid;
   switch($node->type) {
     case 'lnt_album':
-      drupal_goto("lat/user/type/album/$nid");
+      drupal_goto("node/$nid");
+//      drupal_goto("lat/user/type/album/$nid");
       break;
     default:
       drupal_goto("node/$nid/edit");
@@ -35,6 +36,9 @@ function _latuserredirect_handler($direction) {
   $user = user_uid_optional_load();
   $uid = $user->uid;
   switch($direction) {
+    case 'notebooks/images/add':
+      drupal_goto("user/%uid/notebooks/images/add");
+      break;
     case 'nextsteps':
     case 'activities':
     case 'user-menu':
@@ -43,6 +47,9 @@ function _latuserredirect_handler($direction) {
       break;
     case 'workspace':
       drupal_goto("lat/user/workspace");
+      break;
+    case 'user/media/images':
+      drupal_goto("user/$uid/media/images");
       break;
     case 'images':
       drupal_goto("images/$uid");

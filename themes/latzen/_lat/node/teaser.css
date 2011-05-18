@@ -10,11 +10,19 @@
 .node-teaser .node-content-wrapper {
   padding: 4px;
 }
+
+.node-teaser .node-content-wrapper-layout-table {
+  margin: 0;
+}
+
 .node-teaser .node-content-wrapper-layout-table td.node-teaser-left {
   width: 22px;
+  vertical-align: top;
 }
+
 .node-teaser .node-content-wrapper-layout-table td.node-teaser-right {
   width: 100%;
+  vertical-align: top;
 }
 .node-teaser .node-content {
   border-left: solid 1px #ddd; 
@@ -32,6 +40,7 @@
 }
 .node-teaser h3 {
   margin: 0px;
+  font-size: 1em;
 }
 .node-teaser .submitted {
   color: #888;

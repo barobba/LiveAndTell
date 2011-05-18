@@ -1,0 +1,273 @@
+<?php
+/**
+ * Usage:
+ * $config = array(
+ *   'service' => 'http://example.com/service', 
+ *   'domain' => 'example.com',
+ *   'api_key' => 'KEY'
+ * );
+ * $SERVICE = latservice_init($config);
+ * latservice_connect($SERVICE);
+ * $results = latservice_user_login($SERVICE, $username, $password);
+ * ...
+ * latservice_user_logout($SERVICE);
+ * latservice_close($SERVICE);
+ */
+
+function latservice_menu() {
+  $items = array(
+    'admin/lat/latimage/services/test' => array(
+      'title' => 'Testing services for LAT Image',
+      'page callback' => '_latservice_page_test',
+      'access callback' => true,
+    ),
+  );
+  return $items;
+}
+
+function latservice_theme() {
+  return array(
+    'latmediaref' => array(
+      'arguments' => array('handler', 'handler_data', 'args'),
+    ),
+  );
+}
+
+function theme_latmediaref($handler, $handler_data, $args = NULL) {
+  $content = '';
+  $media_data = latservice_handler_process_request($handler, $handler_data);
+  switch ($handler) {
+    case 'http://api.flickr.com/services/rest/':
+      $content .= theme('flickr_photo', $media_data, 't');
+      break;
+    default:
+      // Do nothing
+      break;
+  }
+  return $content;
+}
+
+/**
+ * LAT Service Handles 
+ * @param $op
+ * @param $args
+ */
+function _latservice_handles($op = 'new handle', $args = array()) {
+  static $handles = array();
+  $results = TRUE;
+  switch ($op) {
+    case 'dump':
+      $results = $handles;
+      break;
+    // Create
+    case 'new handle':
+      $hash_key = implode(';', $args);
+      $handle = md5($hash_key);
+      $handles[$handle] = $args;
+      $results = $handle;
+      break;
+    // Read
+    case 'get keys':
+      $handle = $args['handle'];
+      $results = $handles[$handle];
+      break;
+    // Update
+    case 'merge keys':
+      $handle = $args['handle'];
+      $handles[$handle] = array_merge($handles[$handle], $args['data']);
+      break;
+    // Delete
+    case 'remove key':
+      $handle = $args['handle'];
+      $key = $args['key'];
+      unset($handles[$handle][$key]);
+      break;
+    case 'remove handle':
+      $handle = $args['handle'];
+      unset($handles[$handle]);
+      break;
+    default:
+      // Do nothing
+      break;
+  }
+  return $results;
+}
+
+function latservice_dump() {
+  return _latservice_handles('dump');
+}
+
+function latservice_init($config = array()) {
+  return _latservice_handles('new handle', $config);
+}
+
+function latservice_close($handle) {
+  return _latservice_handles('remove handle', array(
+    'handle' => $handle
+  ));
+}
+
+function latservice_connect($handle) {
+  $results = _latservice_request($handle, array(
+      'method' => 'system.connect',
+  ));
+  return $results;
+}
+
+function latservice_user_login($handle, $username, $password) {
+  $results = _latservice_request($handle, array(
+    'method' => 'user.login',
+    'username' => $username,
+    'password' => $password,
+  ));
+  return $results;
+}
+
+function _latservice_request($handle, $request) {
+  
+  // Get the session id, if it exists
+  $session = _latservice_handles('get keys', array('handle' => $handle));
+  if (array_key_exists('sessid', $session)) {
+    $request['sessid'] = $session['sessid'];
+  }
+
+  // Prepare domain time stamp
+  $request['domain_time_stamp'] = time();
+
+  // Prepare domain name
+  $request['domain_name'] = $session['domain_name'];
+  
+  // Prepare nonce
+  static $nonce_counter = 0;
+  $nonce_counter++;
+  if (!array_key_exists('nonce', $request)) {
+    $request['nonce'] = $nonce_counter + time();
+  }
+  
+  // Prepare hash key
+  $hash_key = array(
+    $request['domain_time_stamp'],
+    $request['domain_name'],
+    $request['nonce'],
+    $request['method'],
+  );
+  $hash_key = implode(';', $hash_key);
+  $api_key = $session['api_key'];
+  $hash = hash_hmac('sha256',  $hash_key, $api_key);  
+  $request['hash'] = $hash;
+  
+  // Convert request to JSON format
+  foreach ($request as &$argument) {
+    $argument = json_encode($argument);
+  } 
+  
+  // Make service call
+  $CURL = curl_init();
+  $service = $session['service'];
+  curl_setopt ($CURL, CURLOPT_URL, $service);
+  curl_setopt ($CURL, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt ($CURL, CURLOPT_CONNECTTIMEOUT, 5);
+  curl_setopt ($CURL, CURLOPT_POST, TRUE);
+  curl_setopt ($CURL, CURLOPT_POSTFIELDS, $request);
+  $results = curl_exec($CURL);
+  $results = json_decode($results);
+  $results = (array)$results;
+  curl_close($CURL);
+
+  // Cache session ID
+  if ($results['#data']->sessid) {
+    $sessid = $results['#data']->sessid;
+    _latservice_handles('merge keys', array('handle'=>$handle, 'data' => array('sessid' => $sessid)));
+  }
+
+  // Return results
+  return $results;
+}
+
+function latservice_handler_load($handler) {
+  latservice_handler_settings_initialize();
+  $handlers = variable_get('latservice_handlers', NULL);
+  if (array_key_exists($handler, $handlers)) {
+    return $handlers[$handler]; 
+  }
+  else {
+    return FALSE;
+  }
+}
+
+function latservice_handler_process_request($handler, $request) {
+  $handler_method = latservice_handler_load($handler);
+  if ($handler_method != FALSE) {
+    return $handler_method($handler, $request);
+  }
+}
+
+function latservice_handler_settings_initialize() {
+  variable_set('latservice_handlers', array(
+    'http://api.flickr.com/services/rest/' => 'latservice_handler_flickr',
+  ));
+  variable_set('latservice_handler_flickr', array(
+    'api_key' => 'ad48c050f7180d6057daa7f576ce844e',
+    'secret' => 'ec37d77d34b12245'
+  ));
+}
+
+function latservice_handler_flickr($handler, $request) {
+
+  // Format request
+  parse_str($request, $request);
+  
+  // Make service call
+  $info = flickr_photo_get_info($request['photo_id']);
+  
+  // Return results
+  return $info;
+  
+  /*
+  // Get API key
+  $flickr_vars = variable_get('latservice_handler_flickr', NULL);
+  $api_key = $flickr_vars['api_key'];
+  
+  // Format request
+  parse_str($request, $request);
+  $request['api_key'] = $api_key;
+  $request['format'] = 'json';
+  $request['jsoncallback'] = '?';
+  //dpm($request);
+  
+  // Make service call
+  $CURL = curl_init();
+  curl_setopt ($CURL, CURLOPT_URL, $handler);
+  curl_setopt ($CURL, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt ($CURL, CURLOPT_CONNECTTIMEOUT, 5);
+  //curl_setopt ($CURL, CURLOPT_POST, TRUE);
+  curl_setopt ($CURL, CURLOPT_POSTFIELDS, $request);
+  $results = curl_exec($CURL);
+  curl_close($CURL);
+  
+  // Format results
+  $results = preg_replace('/^jsonFlickrApi\\((.*)\\)$/', '$1', $results);
+  $results = json_decode($results);
+
+  // Return results
+  return $results;
+  */
+  
+}
+
+function _latservice_page_test() {
+  $service = 'http://localcopy.liveandtell.com/services/json';
+  $domain_name = 'liveandtell';
+  $api_key = '7c18889bf7b971f4ea4b0e06e6098931';
+  $SRVC = latservice_init(array(
+    'service' => $service,
+    'domain_name' => $domain_name,
+    'api_key' => $api_key,
+  ));
+  $results = latservice_connect($SRVC);
+  //dpm($results);
+  $results = latservice_user_login($SRVC, 'admin', 'Sakowin7!');
+  //dpm($results);
+  latservice_close($SRVC);
+  return 'here';
+}

@@ -31,9 +31,9 @@ function latlangnav_preprocess_lat_language_content_summary(&$vars) {
     
     $vars['language'] = $language->name; // Capitalized language name
     $vars['language_lower'] = drupal_strtolower($language->name);
+    $vars['content_type_list_by_language'] = theme('lat_language_nodetype_list_by_language', $language, 'table');
     $vars['recent_content'] = views_embed_view('new_content_by_language', 'default', $language->name);
     $vars['authors'] = views_embed_view('authors_by_lang', 'default', $language->name);
-    $vars['content_type_list_by_language'] = theme('lat_language_nodetype_list_by_language', $language, 'table');
 
   }
 }

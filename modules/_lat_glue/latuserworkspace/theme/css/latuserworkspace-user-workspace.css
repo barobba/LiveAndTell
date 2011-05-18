@@ -1,6 +1,3 @@
-@charset "utf-8";
-/* CSS Document */
-
 /******************************************************************
  * Layout table
  ******************************************************************/
@@ -11,6 +8,7 @@
   border-right: solid 1px #ccc;
 	padding: 0px 4px 8px 4px;
 }
+
 /******************************************************************
  * Create Content Menu
  ******************************************************************/
@@ -73,4 +71,27 @@ h3.workspace-menu-title {
 .view-lat-user-workspace-content .views-table td {
 	padding: 4px 2px;
 	padding-top: 6px;
+}
+
+.view-lat-user-workspace-content .views-table td.views-field-title {
+	white-space: hidden;
+}
+.view-lat-user-workspace-content .views-table td.views-field-edit-node {
+}
+.view-lat-user-workspace-content .views-table td.views-field-type {
+	white-space: nowrap;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+.view-lat-user-workspace-content .views-table td.views-field-changed {
+  white-space: nowrap;
+}
+.view-lat-user-workspace-content .views-table td.views-field-status {
+	width: 180px;
+}
+.view-lat-user-workspace-content .views-table td.views-field-status .custom-status {
+  display: inline;
+}
+.view-lat-user-workspace-content .views-table td.views-field-status .custom-publish-link {
+	display: inline;
 }

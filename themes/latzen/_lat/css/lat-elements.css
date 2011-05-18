@@ -1,29 +1,45 @@
-@charset "utf-8";
-/* CSS Document */
 
-.lat-table tbody {
-	border-style: none;
+/**
+ * USER LINKS
+ */
+ 
+ul#user-links {
+  font-size: 1em;
+  float: right;
+  margin: 0px;
+  margin-top: .15em;
+  margin-right: .5em;
+  margin-bottom: 1em; 
 }
+
+table.lat-table tbody {
+  border-style: none;
+}
+
+/**************************************
+ * PAGE TABLE LAYOUT
+ **************************************/
+
 table#lat-page-layout-table {
 	width: 100%;
 }
 table#lat-page-layout-table tbody {
 	border-style: none;
 }
-table#lat-page-layout-table td {
+table#lat-page-layout-table td.column {
 	vertical-align: top;
 }
 
 /**************************************
  * NODE TABLE LAYOUT
  **************************************/
-.node-content-wrapper-layout-table {
+table.node-content-wrapper-layout-table {
   width: 100%;
 }
-.node-content-wrapper-layout-table tbody {
+table.node-content-wrapper-layout-table tbody {
   border-style: none;
 } 
-.node-content-wrapper-layout-table td {
+table.node-content-wrapper-layout-table td.column {
   vertical-align: top;
 } 
 

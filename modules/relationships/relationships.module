@@ -252,6 +252,7 @@ function relationships_node_get_parents($child) {
   $result = db_query("SELECT field_name FROM {relationships} WHERE child_type = '%s'", $child['type']);
   
   // Loop through all field_names
+  $parents = array();
   while ($row = db_fetch_object($result)) {
     
     // If field_name exists in node, we are managing this field
