@@ -45,3 +45,7 @@
     <?php print $lat_node_posted_date ?>
   </div>
 </div>
+
+<?php if ($google_ads_link_units): ?>
+  <?php print $google_ads_link_units ?>
+<?php endif; ?>

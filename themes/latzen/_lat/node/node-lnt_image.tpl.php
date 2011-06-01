@@ -5,7 +5,7 @@
     <!-- ############# -->
     <!-- IMAGE & TERMS -->      
     <!-- ############# -->
-    
+  
     <table class="node-content-wrapper-layout-table">
       <tr>
         <td class="lat-image-left column">
@@ -76,6 +76,8 @@
     <?php /* Default value */ ?>
     <?php //print $lat_image_tags ?>
   </div>
+
+  <?php print $google_ads_link_units ?>
   
   <?php /* TODO: CREATE PATH FOR RETURNING DROP-DOWN CONTENT */ ?>
   <?php print $cp_embed_code ?>
