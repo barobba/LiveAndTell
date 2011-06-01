@@ -2,6 +2,10 @@
  * LANGUAGE LISTING
  *******************************************************************/
  
+.lat-language-listing {
+	margin-bottom: 2em;
+}
+ 
 /* TABLE FORMAT */
 .lat-language-listing table {
   width: 100%;
