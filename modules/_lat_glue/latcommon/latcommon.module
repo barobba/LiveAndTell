@@ -112,12 +112,20 @@ function lnt_node_access_and_type($op, &$node, $type) {
   return $node->type == $type && node_access($op, $node);
 }
 
-function lat_preprocess_page_for_vertical_tabs(&$vars) {
+/**
+ * LAT Preprocess Page for Vertical Tabs
+ * @param unknown_type $vars
+ */
+function lat_vars_page_script_vertical_tabs_remove(&$vars) {
+  // lat_vars_page_script_vertical_tabs_remove
   $scripts = explode("\n", $vars['scripts']);
   foreach ($scripts as $index => $script) {
-    if (strpos($script, 'vertical_tabs') !== FALSE) {
+    $found_script = strpos($script, 'vertical_tabs') !== FALSE;  
+    if ($found_script) {
+      // Remove "vertical tabs" script
       unset($scripts[$index]);
     }
   }
   $vars['scripts'] = implode("\n", $scripts);
 }
+
