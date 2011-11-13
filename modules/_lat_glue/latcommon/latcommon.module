@@ -129,3 +129,5 @@ function lat_vars_page_script_vertical_tabs_remove(&$vars) {
   $vars['scripts'] = implode("\n", $scripts);
 }
 
+function lat_donothing() {
+}
